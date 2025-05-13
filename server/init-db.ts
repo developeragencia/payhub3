@@ -1,10 +1,12 @@
 import { runMigrations } from './migrate';
 import { setupDatabase } from './db-setup';
+import { runAllMigrations } from './migrations/add-webhook-dados';
 
 /**
  * Inicializa o banco de dados completamente
  * 1. Executa as migrações (cria tabelas)
- * 2. Configura dados iniciais
+ * 2. Executa migrações de alteração de schema
+ * 3. Configura dados iniciais
  */
 async function initDatabase() {
   try {
@@ -13,6 +15,10 @@ async function initDatabase() {
     // Primeiro executa migrações (cria tabelas)
     console.log("\n==== EXECUTANDO MIGRAÇÕES ====");
     await runMigrations();
+    
+    // Executa migrações para adicionar novas colunas
+    console.log("\n==== EXECUTANDO MIGRAÇÕES DE ESQUEMA ====");
+    await runAllMigrations();
     
     // Depois configura dados iniciais
     console.log("\n==== CONFIGURANDO DADOS INICIAIS ====");
