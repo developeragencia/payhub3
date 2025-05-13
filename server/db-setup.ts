@@ -89,15 +89,19 @@ export async function setupDatabase() {
       }).returning();
       
       // Criar checkout para o produto
-      await db.insert(checkouts).values({
-        nome: "Checkout Padrão",
-        url: "/checkout/curso-marketing",
-        produtoId: produto.id,
-        layout: "padrao",
-        config: { tema: "claro", showLogo: true },
-        ativo: true,
-        dataCriacao: new Date()
-      });
+      // Usando SQL direto para evitar problemas com colunas em camelCase
+      await pool.query(`
+        INSERT INTO checkouts (nome, url, "produtoId", layout, config, ativo, "dataCriacao") 
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `, [
+        "Checkout Padrão",
+        "/checkout/curso-marketing",
+        produto.id,
+        "padrao",
+        JSON.stringify({ tema: "claro", showLogo: true }),
+        true,
+        new Date()
+      ]);
       
       console.log("Produto e checkout de demonstração criados");
     } else {
@@ -132,19 +136,23 @@ export async function setupDatabase() {
       const [checkout] = await db.select().from(checkouts);
       
       if (checkout) {
-        await db.insert(transacoes).values({
-          checkoutId: checkout.id,
-          clienteNome: "Maria Oliveira",
-          clienteEmail: "maria@exemplo.com",
-          valor: 1458.90,
-          moeda: "BRL",
-          status: "aprovado",
-          metodo: "Cartão de Crédito",
-          referencia: "TRX-78945",
-          data: new Date(),
-          dataCriacao: new Date(),
-          metadata: { origem: "demonstracao" }
-        });
+        // Usando SQL direto para evitar problemas com colunas em camelCase
+        await pool.query(`
+          INSERT INTO transacoes ("checkoutId", "clienteNome", "clienteEmail", valor, moeda, status, metodo, referencia, data, "dataCriacao", metadata) 
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        `, [
+          checkout.id,
+          "Maria Oliveira",
+          "maria@exemplo.com",
+          1458.90,
+          "BRL",
+          "aprovado",
+          "Cartão de Crédito",
+          "TRX-78945",
+          new Date(),
+          new Date(),
+          JSON.stringify({ origem: "demonstracao" })
+        ]);
         console.log("Transação de demonstração criada");
       } else {
         console.log("Não foi possível criar transação - nenhum checkout encontrado");
