@@ -33,6 +33,7 @@ export interface IStorage {
   // Transações
   getTransacao(id: number): Promise<Transacao | undefined>;
   getTransacoes(): Promise<Transacao[]>;
+  getTransacaoPorReferencia(referencia: string): Promise<Transacao | undefined>;
   createTransacao(transacao: InsertTransacao): Promise<Transacao>;
   
   // Webhooks

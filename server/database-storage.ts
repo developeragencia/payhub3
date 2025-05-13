@@ -127,6 +127,11 @@ export class DatabaseStorage implements IStorage {
     return newTransacao;
   }
 
+  async getTransacaoPorReferencia(referencia: string): Promise<Transacao | undefined> {
+    const [transacao] = await db.select().from(transacoes).where(eq(transacoes.referencia, referencia));
+    return transacao;
+  }
+
   // Webhooks
   async getWebhook(id: number): Promise<Webhook | undefined> {
     const [webhook] = await db.select().from(webhooks).where(eq(webhooks.id, id));
