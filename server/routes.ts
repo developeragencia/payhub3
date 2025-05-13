@@ -440,13 +440,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // API do MercadoPago
+  // API do MercadoPago - Rotas públicas
   app.post("/api/mercadopago/payment", async (req, res, next) => {
     try {
-      if (!req.isAuthenticated()) {
-        return res.status(401).json({ message: "Não autenticado" });
-      }
-      
+      // Removida verificação de autenticação para permitir pagamentos públicos
       const paymentData = req.body;
       const result = await createPayment(paymentData);
       
@@ -484,21 +481,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/mercadopago/preference", async (req, res, next) => {
     try {
-      if (!req.isAuthenticated()) {
-        return res.status(401).json({ message: "Não autenticado" });
-      }
-      
+      // Removida verificação de autenticação para permitir checkout público
       const { items, backUrls, notificationUrl } = req.body;
       
       const result = await createPreference(items, backUrls, notificationUrl);
       
-      // Registrar atividade
+      // Registrar atividade (usando userId como null para rotas públicas)
       await storage.createAtividade({
         tipo: "checkout",
         descricao: `Nova preferência de pagamento criada`,
         icone: "shopping-cart-line",
         cor: "accent",
-        userId: req.user?.id
+        userId: null
       });
       
       res.status(201).json(result);
