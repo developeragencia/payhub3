@@ -4,6 +4,7 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertProdutoSchema, insertCheckoutSchema, insertTransacaoSchema, insertWebhookSchema } from "@shared/schema";
 import { z } from "zod";
+import { createPayment, createPreference, processWebhook } from "./mercadopago";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configurar autenticação
@@ -436,6 +437,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(atividades);
     } catch (error) {
       next(error);
+    }
+  });
+
+  // API do MercadoPago
+  app.post("/api/mercadopago/payment", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Não autenticado" });
+      }
+      
+      const paymentData = req.body;
+      const result = await createPayment(paymentData);
+      
+      // Registrar a transação no sistema
+      if (result.id) {
+        const transacao = await storage.createTransacao({
+          status: 'pendente',
+          metodo: paymentData.payment_method_id || 'mercadopago',
+          valor: paymentData.transaction_amount,
+          moeda: 'BRL',
+          referencia: result.id.toString(),
+          checkoutId: paymentData.checkoutId || null,
+          clienteEmail: paymentData.payer.email,
+          clienteNome: paymentData.payer.name || '',
+          metadata: JSON.stringify(result),
+          dataCriacao: new Date()
+        });
+        
+        // Registrar atividade
+        await storage.createAtividade({
+          tipo: "transacao",
+          descricao: `Nova transação iniciada - ${transacao.referencia}`,
+          icone: "secure-payment-line",
+          cor: "info",
+          userId: req.user?.id
+        });
+      }
+      
+      res.status(201).json(result);
+    } catch (error) {
+      console.error('Erro ao processar pagamento:', error);
+      next(error);
+    }
+  });
+  
+  app.post("/api/mercadopago/preference", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Não autenticado" });
+      }
+      
+      const { items, backUrls, notificationUrl } = req.body;
+      
+      const result = await createPreference(items, backUrls, notificationUrl);
+      
+      // Registrar atividade
+      await storage.createAtividade({
+        tipo: "checkout",
+        descricao: `Nova preferência de pagamento criada`,
+        icone: "shopping-cart-line",
+        cor: "accent",
+        userId: req.user?.id
+      });
+      
+      res.status(201).json(result);
+    } catch (error) {
+      console.error('Erro ao criar preferência:', error);
+      next(error);
+    }
+  });
+  
+  // Endpoint para receber notificações do MercadoPago (webhook)
+  app.post("/api/mercadopago/webhook", async (req, res, next) => {
+    try {
+      const { topic, id } = req.query;
+      
+      if (!topic || !id) {
+        return res.status(400).json({ message: "Parâmetros inválidos" });
+      }
+      
+      const result = await processWebhook(topic.toString(), id.toString());
+      
+      // Atualizar o webhook no sistema
+      const webhooks = await storage.getWebhooks();
+      const webhook = webhooks.find(w => w.evento === `mercadopago.${topic}`);
+      
+      if (webhook) {
+        await storage.updateWebhook(webhook.id, {
+          ultimaExecucao: new Date(),
+          ultimoStatus: 'success'
+        });
+        
+        // Registrar atividade
+        await storage.createAtividade({
+          tipo: "webhook",
+          descricao: `Webhook do MercadoPago processado - ${topic}`,
+          icone: "notification-4-line",
+          cor: "success",
+          userId: null
+        });
+      }
+      
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('Erro ao processar webhook:', error);
+      
+      // Mesmo em caso de erro, devemos responder com 200 para o MercadoPago
+      // não continuar tentando enviar a notificação
+      res.status(200).json({ success: false, error: (error as Error).message });
     }
   });
 
