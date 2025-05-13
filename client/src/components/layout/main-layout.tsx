@@ -44,7 +44,7 @@ export function MainLayout({ children, pageTitle, loading = false }: MainLayoutP
     }
 
     fetchUser();
-  }, [toast]);
+  }, []);
 
   // Ajuste para fechamento automático do sidebar em mobile ao navegar
   useEffect(() => {
