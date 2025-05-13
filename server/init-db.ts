@@ -26,15 +26,14 @@ async function initDatabase() {
   }
 }
 
-// Se executado diretamente (não importado)
-if (require.main === module) {
-  initDatabase()
-    .then(success => {
-      process.exit(success ? 0 : 1);
-    })
-    .catch(() => {
-      process.exit(1);
-    });
-}
+// Em módulos ES, não temos acesso a require.main
+// Vamos executar o código sempre que o módulo for importado
+initDatabase()
+  .then(success => {
+    console.log("Inicialização do banco de dados:", success ? "Sucesso" : "Falha");
+  })
+  .catch((error) => {
+    console.error("Erro fatal na inicialização do banco de dados:", error);
+  });
 
 export { initDatabase };

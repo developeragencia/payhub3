@@ -11,12 +11,49 @@ import {
 import { eq } from "drizzle-orm";
 
 /**
+ * Verifica se uma tabela existe no banco de dados
+ */
+async function tableExists(tableName: string): Promise<boolean> {
+  try {
+    const result = await pool.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = $1
+      );
+    `, [tableName]);
+    
+    return result.rows[0].exists;
+  } catch (error) {
+    console.error(`Erro ao verificar se a tabela ${tableName} existe:`, error);
+    return false;
+  }
+}
+
+/**
  * Cria tabelas e dados iniciais para o banco de dados
  */
 export async function setupDatabase() {
   console.log("Iniciando configuração do banco de dados...");
   
   try {
+    // Verificar se as tabelas existem
+    const usersTableExists = await tableExists('users');
+    const produtosTableExists = await tableExists('produtos');
+    const checkoutsTableExists = await tableExists('checkouts');
+    const webhooksTableExists = await tableExists('webhooks');
+    const transacoesTableExists = await tableExists('transacoes');
+    const atividadesTableExists = await tableExists('atividades');
+    
+    if (!usersTableExists || !produtosTableExists || !checkoutsTableExists || 
+        !webhooksTableExists || !transacoesTableExists || !atividadesTableExists) {
+      console.log("Uma ou mais tabelas não existem. Aguarde enquanto as migrações são concluídas.");
+      // Retornar sem fazer mais nada, pois as tabelas ainda serão criadas pelo processo de migração
+      return;
+    }
+    
+    console.log("Tabelas existem, configurando dados iniciais...");
+    
     // Verificar se o usuário admin já existe
     const [existingAdmin] = await db.select().from(users).where(eq(users.username, "admin"));
     
@@ -89,20 +126,28 @@ export async function setupDatabase() {
     
     if (!existingTransacao) {
       console.log("Criando transação de demonstração...");
-      await db.insert(transacoes).values({
-        checkoutId: 1,
-        clienteNome: "Maria Oliveira",
-        clienteEmail: "maria@exemplo.com",
-        valor: 1458.90,
-        moeda: "BRL",
-        status: "aprovado",
-        metodo: "Cartão de Crédito",
-        referencia: "TRX-78945",
-        data: new Date(),
-        dataCriacao: new Date(),
-        metadata: { origem: "demonstracao" }
-      });
-      console.log("Transação de demonstração criada");
+      
+      // Verificar se já existe algum checkout para associar
+      const [checkout] = await db.select().from(checkouts);
+      
+      if (checkout) {
+        await db.insert(transacoes).values({
+          checkoutId: checkout.id,
+          clienteNome: "Maria Oliveira",
+          clienteEmail: "maria@exemplo.com",
+          valor: 1458.90,
+          moeda: "BRL",
+          status: "aprovado",
+          metodo: "Cartão de Crédito",
+          referencia: "TRX-78945",
+          data: new Date(),
+          dataCriacao: new Date(),
+          metadata: { origem: "demonstracao" }
+        });
+        console.log("Transação de demonstração criada");
+      } else {
+        console.log("Não foi possível criar transação - nenhum checkout encontrado");
+      }
     } else {
       console.log("Transações já existem no banco de dados");
     }
@@ -150,23 +195,19 @@ export async function setupDatabase() {
     
   } catch (error) {
     console.error("Erro durante a configuração do banco de dados:", error);
-    throw error;
+    // Não lançar erro aqui, apenas logar, para que o aplicativo continue
+    // mesmo que não consiga configurar os dados iniciais
   } finally {
     // Não feche o pool aqui para permitir que o app continue usando
   }
 }
 
-// Se executado diretamente (não importado)
-if (require.main === module) {
-  setupDatabase()
-    .then(() => {
-      console.log("Script de configuração concluído");
-      pool.end();
-      process.exit(0);
-    })
-    .catch(err => {
-      console.error("Erro no script de configuração:", err);
-      pool.end();
-      process.exit(1);
-    });
-}
+// Em módulos ES, executamos independentemente de como o arquivo é chamado
+// Não precisamos fazer verificação de módulo principal
+setupDatabase()
+  .then(() => {
+    console.log("Script de configuração concluído");
+  })
+  .catch(err => {
+    console.error("Erro no script de configuração:", err);
+  });

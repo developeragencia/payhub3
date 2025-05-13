@@ -1,133 +1,108 @@
-import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
-import { Bell, MenuIcon, ChevronDown } from "lucide-react";
+import { Bell, Menu, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { User } from "@shared/schema";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { apiRequest } from "@/lib/queryClient";
 
-type HeaderProps = {
+interface HeaderProps {
   sidebarOpen: boolean;
   toggleSidebar: () => void;
-};
+  pageTitle?: string;
+  user: User;
+}
 
-export function Header({ sidebarOpen, toggleSidebar }: HeaderProps) {
-  const [_, setLocation] = useLocation();
-  const [user, setUser] = useState<User | null>(null);
-  
-  // Buscar o usuário ao montar o componente
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const res = await fetch('/api/user');
-        if (res.ok) {
-          const userData = await res.json();
-          setUser(userData);
-        }
-      } catch (error) {
-        console.error('Erro ao buscar usuário:', error);
-      }
-    }
-    
-    fetchUser();
-  }, []);
-  
-  const handleLogout = async () => {
+export function Header({ sidebarOpen, toggleSidebar, pageTitle, user }: HeaderProps) {
+  const isMobile = useIsMobile();
+
+  async function handleLogout() {
     try {
-      const res = await fetch('/api/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const res = await apiRequest("POST", "/api/logout");
       
       if (res.ok) {
-        setUser(null);
-        setLocation("/auth");
+        window.location.href = "/auth";
+      } else {
+        throw new Error("Falha ao realizar logout");
       }
     } catch (error) {
-      console.error('Erro ao fazer logout:', error);
+      console.error("Erro ao fazer logout:", error);
     }
-  };
-  
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-  
+  }
+
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-40">
-      <div className="px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center">
-          <button 
-            onClick={toggleSidebar} 
-            className="mr-3 lg:hidden text-neutral-600 hover:text-primary transition-colors"
-            aria-label={sidebarOpen ? "Fechar menu" : "Abrir menu"}
+    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b bg-background px-4 md:px-6">
+      <div className="flex items-center">
+        {!isMobile && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleSidebar}
+            aria-label="Toggle sidebar"
+            className="mr-2"
           >
-            <MenuIcon size={22} />
-          </button>
-          <h1 className="text-xl font-semibold text-neutral-800 truncate mr-6">
-            <span className="lg:hidden">Painel</span>
-            <span className="hidden lg:inline">Painel de Controle</span>
-          </h1>
-        </div>
-        
-        <div className="flex items-center space-x-4">
+            <Menu className="h-5 w-5" />
+          </Button>
+        )}
+        {pageTitle && (
+          <h1 className="text-xl font-semibold">{pageTitle}</h1>
+        )}
+      </div>
+
+      <div className="flex items-center gap-4 md:gap-6">
+        {/* Barra de pesquisa - esconder em dispositivos móveis */}
+        <div className="hidden md:block md:w-64">
           <div className="relative">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="text-neutral-600 hover:text-primary transition-colors relative"
-            >
-              <Bell size={20} />
-              <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-destructive"></span>
-            </Button>
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Pesquisar..."
+              className="w-full rounded-full bg-background pl-8 md:w-[300px] lg:w-[360px]"
+            />
           </div>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2 px-2">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={user?.avatar ? user.avatar : undefined} alt={user?.nome || "Usuário"} />
-                  <AvatarFallback>{user?.nome ? getInitials(user.nome) : "U"}</AvatarFallback>
-                </Avatar>
-                <span className="hidden md:block text-sm font-medium text-neutral-800">
-                  {user?.nome || "Usuário"}
-                </span>
-                <ChevronDown size={16} className="text-neutral-500" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem 
-                className="cursor-pointer"
-                onClick={() => setLocation("/perfil")}
-              >
-                Perfil
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                className="cursor-pointer"
-                onClick={() => setLocation("/configuracoes")}
-              >
-                Configurações
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                className="cursor-pointer text-destructive focus:text-destructive"
-                onClick={handleLogout}
-              >
-                Sair
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
+
+        {/* Ícone de notificações */}
+        <Button variant="ghost" size="icon">
+          <Bell className="h-5 w-5" />
+        </Button>
+
+        {/* Menu do usuário */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={user?.avatar || undefined} alt={user?.nome} />
+                <AvatarFallback>{user?.nome?.substring(0, 2).toUpperCase()}</AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="end" forceMount>
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{user?.nome}</p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {user?.email}
+                </p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Meu Perfil</DropdownMenuItem>
+            <DropdownMenuItem>Configurações</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout}>
+              Sair
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

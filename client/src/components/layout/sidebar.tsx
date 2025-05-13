@@ -1,219 +1,193 @@
-import { useState } from "react";
-import { useLocation, Link } from "wouter";
 import { cn } from "@/lib/utils";
+import { Link, useLocation } from "wouter";
 import {
-  LayoutDashboard, 
-  LayoutGrid, 
-  ShoppingBag, 
-  ShoppingCart, 
-  FileInput, 
-  ArrowRight, 
-  ListChecks, 
-  LayoutList, 
-  CircleDollarSign, 
-  Webhook, 
-  ChevronDown, 
-  ChevronRight,
-  HelpCircle
+  UserCircle,
+  Home,
+  Package,
+  ShoppingCart,
+  CreditCard,
+  Bell,
+  Settings,
+  LogOut,
+  XIcon,
+  ChevronRight
 } from "lucide-react";
+import { User } from "@shared/schema";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
-type NavItemProps = {
+interface SidebarProps {
+  sidebarOpen: boolean;
+  toggleSidebar: () => void;
+  user: User;
+}
+
+interface NavItemProps {
   href: string;
   icon: React.ReactNode;
-  children: React.ReactNode;
-  active?: boolean;
-  onClick?: () => void;
-};
+  text: string;
+  badge?: number;
+  active: boolean;
+}
 
-function NavItem({ href, icon, children, active, onClick }: NavItemProps) {
+function NavItem({ href, icon, text, badge, active }: NavItemProps) {
   return (
     <Link href={href}>
       <a
         className={cn(
-          "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-          active
-            ? "bg-primary-50 text-primary-700"
-            : "text-neutral-700 hover:bg-neutral-100"
+          "mb-1 flex items-center rounded-md px-3 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground",
+          active ? "bg-accent text-accent-foreground" : "text-muted-foreground"
         )}
-        onClick={onClick}
       >
-        <span className="mr-3 text-lg">{icon}</span>
-        <span>{children}</span>
+        {icon}
+        <span className="ml-3 flex-1">{text}</span>
+        {badge !== undefined && (
+          <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1 text-xs font-medium text-primary-foreground">
+            {badge}
+          </span>
+        )}
       </a>
     </Link>
   );
 }
 
-type NavGroupProps = {
-  title: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-};
-
-function NavGroup({ title, icon, children, defaultOpen = false }: NavGroupProps) {
-  const [open, setOpen] = useState(defaultOpen);
-  
-  return (
-    <div className="pb-2">
-      <button
-        className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-neutral-700 rounded-md hover:bg-neutral-100 transition-colors"
-        onClick={() => setOpen(!open)}
-      >
-        <div className="flex items-center">
-          <span className="mr-3 text-lg">{icon}</span>
-          <span>{title}</span>
-        </div>
-        {open ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
-      </button>
-      <div
-        className={cn(
-          "space-y-1 ml-8 mt-1 overflow-hidden transition-all",
-          open ? "max-h-96" : "max-h-0"
-        )}
-      >
-        {children}
-      </div>
-    </div>
-  );
-}
-
-export function Sidebar({ sidebarOpen }: { sidebarOpen: boolean }) {
+export function Sidebar({ sidebarOpen, toggleSidebar, user }: SidebarProps) {
   const [location] = useLocation();
-  
+  const { toast } = useToast();
+
+  const isActive = (path: string) => location === path;
+
+  async function handleLogout() {
+    try {
+      const res = await apiRequest("POST", "/api/logout");
+      
+      if (res.ok) {
+        window.location.href = "/auth";
+      } else {
+        throw new Error("Falha ao realizar logout");
+      }
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao realizar logout",
+        variant: "destructive"
+      });
+      console.error("Erro ao fazer logout:", error);
+    }
+  }
+
   return (
     <>
+      {/* Overlay para mobile - aparece quando o sidebar está aberto */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside
+      <div
         className={cn(
-          "w-64 fixed inset-y-0 top-[56px] pt-2 bg-white border-r border-neutral-200 transition-all duration-300 z-30 lg:ml-0",
-          sidebarOpen ? "ml-0" : "-ml-64"
+          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r bg-background transition-transform duration-300 ease-in-out lg:relative lg:z-auto lg:translate-x-0",
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="flex flex-col h-full">
-          <div className="px-3 py-2 flex-1 overflow-y-auto">
-            <nav className="space-y-1">
-              <div className="pb-2">
-                <span className="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Dashboards</span>
-                <NavItem 
-                  href="/" 
-                  icon={<LayoutDashboard />} 
-                  active={location === "/" || location === "/dashboard"}
-                >
-                  Dashboard Admin
-                </NavItem>
-                <NavItem 
-                  href="/dashboard-padrao" 
-                  icon={<LayoutGrid />} 
-                  active={location === "/dashboard-padrao"}
-                >
-                  Dashboard Padrão
-                </NavItem>
-              </div>
-              
-              <NavGroup 
-                title="Produtos" 
-                icon={<ShoppingBag />}
-                defaultOpen={location.startsWith("/produtos")}
-              >
-                <NavItem 
-                  href="/produtos/checkout-builder" 
-                  icon={<ArrowRight size={18} />} 
-                  active={location === "/produtos/checkout-builder"}
-                >
-                  Checkout Builder
-                </NavItem>
-                <NavItem 
-                  href="/produtos/configs-checkout" 
-                  icon={<ArrowRight size={18} />} 
-                  active={location === "/produtos/configs-checkout"}
-                >
-                  Configs de Checkout
-                </NavItem>
-              </NavGroup>
-              
-              <NavGroup 
-                title="Checkout" 
-                icon={<ShoppingCart />}
-                defaultOpen={location.startsWith("/checkout")}
-              >
-                <NavItem 
-                  href="/checkout/novo" 
-                  icon={<ArrowRight size={18} />} 
-                  active={location === "/checkout/novo"}
-                >
-                  Novo
-                </NavItem>
-                <NavItem 
-                  href="/checkout/link" 
-                  icon={<ArrowRight size={18} />} 
-                  active={location === "/checkout/link"}
-                >
-                  Checkout Link
-                </NavItem>
-                <NavItem 
-                  href="/checkout/list" 
-                  icon={<ArrowRight size={18} />} 
-                  active={location === "/checkout/list"}
-                >
-                  Checkout List
-                </NavItem>
-                <NavItem 
-                  href="/checkout/layout" 
-                  icon={<ArrowRight size={18} />} 
-                  active={location === "/checkout/layout"}
-                >
-                  Lista de Layout
-                </NavItem>
-              </NavGroup>
-              
-              <NavGroup 
-                title="Operações" 
-                icon={<CircleDollarSign />}
-                defaultOpen={location.startsWith("/operacoes")}
-              >
-                <NavItem 
-                  href="/operacoes/transacoes" 
-                  icon={<ArrowRight size={18} />} 
-                  active={location === "/operacoes/transacoes"}
-                >
-                  Transações
-                </NavItem>
-                <NavItem 
-                  href="/operacoes/webhooks" 
-                  icon={<ArrowRight size={18} />} 
-                  active={location === "/operacoes/webhooks"}
-                >
-                  Webhooks
-                </NavItem>
-              </NavGroup>
-            </nav>
+        {/* Header do Sidebar */}
+        <div className="flex h-16 items-center justify-between border-b px-4">
+          <div className="flex items-center">
+            <span className="text-xl font-semibold text-primary">MercadoPago Admin</span>
           </div>
-          
-          <div className="p-4 border-t border-neutral-200">
-            <div className="bg-primary-50 rounded-lg p-3">
-              <p className="text-xs font-medium text-primary-800">Precisa de ajuda?</p>
-              <p className="text-xs text-primary-700 mt-1">Nosso suporte está disponível 24/7.</p>
-              <Button
-                size="sm"
-                className="mt-2 w-full py-1.5 text-xs font-medium"
-              >
-                Contatar Suporte
-              </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleSidebar}
+            className="lg:hidden"
+          >
+            <XIcon className="h-5 w-5" />
+          </Button>
+        </div>
+
+        {/* Perfil do Usuário */}
+        <div className="border-b px-4 py-4">
+          <div className="flex items-center">
+            <Avatar className="h-9 w-9">
+              <AvatarImage src={user?.avatar || undefined} alt={user?.nome} />
+              <AvatarFallback>{user?.nome?.substring(0, 2).toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <div className="ml-3 overflow-hidden">
+              <p className="text-sm font-medium text-foreground">{user?.nome}</p>
+              <p className="truncate text-xs text-muted-foreground">{user?.email}</p>
             </div>
           </div>
         </div>
-      </aside>
-      
-      {/* Mobile backdrop */}
-      <div
-        onClick={() => sidebarOpen}
-        className={cn(
-          "fixed inset-0 bg-black transition-opacity duration-300 lg:hidden z-20",
-          sidebarOpen ? "opacity-50 pointer-events-auto" : "opacity-0 pointer-events-none"
-        )}
-      />
+
+        {/* Menu de Navegação */}
+        <nav className="flex-1 overflow-y-auto p-2">
+          <NavItem
+            href="/"
+            icon={<Home className="h-5 w-5" />}
+            text="Dashboard"
+            active={isActive("/")}
+          />
+          <NavItem
+            href="/produtos"
+            icon={<Package className="h-5 w-5" />}
+            text="Produtos"
+            active={isActive("/produtos")}
+          />
+          <NavItem
+            href="/checkouts"
+            icon={<ShoppingCart className="h-5 w-5" />}
+            text="Checkouts"
+            active={isActive("/checkouts")}
+          />
+          <NavItem
+            href="/transacoes"
+            icon={<CreditCard className="h-5 w-5" />}
+            text="Transações"
+            active={isActive("/transacoes")}
+          />
+          <NavItem
+            href="/webhooks"
+            icon={<Bell className="h-5 w-5" />}
+            text="Webhooks"
+            active={isActive("/webhooks")}
+          />
+          <NavItem
+            href="/configuracoes"
+            icon={<Settings className="h-5 w-5" />}
+            text="Configurações"
+            active={isActive("/configuracoes")}
+          />
+          <div className="py-4">
+            <div className="mx-3 h-px bg-border" />
+          </div>
+          <button
+            onClick={handleLogout}
+            className="mb-1 flex w-full items-center rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground"
+          >
+            <LogOut className="h-5 w-5" />
+            <span className="ml-3 flex-1">Sair</span>
+          </button>
+        </nav>
+      </div>
+
+      {/* Mobile toggle button que aparece quando o sidebar está fechado */}
+      {!sidebarOpen && (
+        <div className="fixed bottom-4 left-4 z-20 lg:hidden">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleSidebar}
+            className="rounded-full shadow-md"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </div>
+      )}
     </>
   );
 }

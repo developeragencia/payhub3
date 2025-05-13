@@ -11,47 +11,100 @@ import MercadoPagoCheckoutPage from "@/pages/mercadopago-checkout";
 import PagamentoPage from "@/pages/pagamento-page";
 import TransacaoStatusPage from "@/pages/transacao-status-page";
 import { Loader2 } from "lucide-react";
-import { useState, useEffect } from "react";
-import { apiRequest } from "./lib/queryClient";
+import { useState, useEffect, createContext, useContext } from "react";
+import { apiRequest } from "@/lib/queryClient";
 import { User } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
 
-// Interface simplificada para simulação do contexto de autenticação
-interface AuthState {
+// Interface para o contexto de autenticação
+interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   error: string | null;
+  logout: () => Promise<void>;
 }
 
-// Componente para rotas protegidas
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const [authState, setAuthState] = useState<AuthState>({
-    user: null,
-    isLoading: true,
-    error: null
-  });
-  const [_, setLocation] = useLocation();
+// Criar o contexto de autenticação
+const AuthContext = createContext<AuthContextType | null>(null);
+
+// Hook para usar o contexto de autenticação
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth deve ser usado dentro de um AuthProvider");
+  }
+  return context;
+}
+
+// Provider para o contexto de autenticação
+function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
   
+  // Verificar autenticação ao montar o componente
   useEffect(() => {
     async function checkAuth() {
       try {
-        const res = await fetch('/api/user');
+        const res = await apiRequest("GET", "/api/user");
         if (res.ok) {
-          const user = await res.json();
-          setAuthState({ user, isLoading: false, error: null });
+          const userData = await res.json();
+          setUser(userData);
         } else {
-          setAuthState({ user: null, isLoading: false, error: 'Não autenticado' });
-          setLocation('/auth');
+          setError("Não autenticado");
+          setUser(null);
         }
       } catch (error) {
-        setAuthState({ user: null, isLoading: false, error: 'Erro ao verificar autenticação' });
-        setLocation('/auth');
+        setError("Erro ao verificar autenticação");
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
     }
     
     checkAuth();
-  }, [setLocation]);
+  }, []);
   
-  if (authState.isLoading) {
+  // Função para fazer logout
+  const logout = async () => {
+    try {
+      const res = await apiRequest("POST", "/api/logout");
+      if (res.ok) {
+        setUser(null);
+        window.location.href = "/auth";
+      } else {
+        throw new Error("Falha ao realizar logout");
+      }
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao realizar logout",
+        variant: "destructive"
+      });
+      console.error("Erro ao fazer logout:", error);
+    }
+  };
+  
+  return (
+    <AuthContext.Provider value={{ user, isLoading, error, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// Componente para rotas protegidas
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const [_, setLocation] = useLocation();
+  const { user, isLoading } = useAuth();
+  
+  useEffect(() => {
+    if (!isLoading && !user) {
+      setLocation("/auth");
+    }
+  }, [isLoading, user, setLocation]);
+  
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -59,7 +112,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
     );
   }
   
-  if (!authState.user) {
+  if (!user) {
     return <Redirect to="/auth" />;
   }
   
@@ -79,17 +132,17 @@ function Router() {
           <ProdutosPage />
         </PrivateRoute>
       </Route>
-      <Route path="/checkout">
+      <Route path="/checkouts">
         <PrivateRoute>
           <CheckoutPage />
         </PrivateRoute>
       </Route>
-      <Route path="/operacoes">
+      <Route path="/webhooks">
         <PrivateRoute>
           <OperacoesPage />
         </PrivateRoute>
       </Route>
-      <Route path="/mercadopago-checkout">
+      <Route path="/transacoes">
         <PrivateRoute>
           <MercadoPagoCheckoutPage />
         </PrivateRoute>
@@ -106,10 +159,12 @@ function Router() {
 
 function App() {
   return (
-    <TooltipProvider>
-      <Toaster />
-      <Router />
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Router />
+      </TooltipProvider>
+    </AuthProvider>
   );
 }
 

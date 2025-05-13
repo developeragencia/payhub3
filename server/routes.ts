@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { setupAuth } from "./auth";
+import { setupAuth } from "./auth-new";
 import { storage } from "./storage";
 import { insertProdutoSchema, insertCheckoutSchema, insertTransacaoSchema, insertWebhookSchema, updateWebhookSchema } from "@shared/schema";
 import { z } from "zod";
