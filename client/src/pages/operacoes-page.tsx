@@ -70,6 +70,7 @@ export default function OperacoesPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewTransacaoDialogOpen, setIsViewTransacaoDialogOpen] = useState(false);
+  const [isViewWebhookDialogOpen, setIsViewWebhookDialogOpen] = useState(false);
   const [selectedWebhook, setSelectedWebhook] = useState<Webhook | null>(null);
   const [selectedTransacao, setSelectedTransacao] = useState<Transacao | null>(null);
   const { toast } = useToast();
