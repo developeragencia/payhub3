@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Bell, MenuIcon, ChevronDown } from "lucide-react";
 import {
@@ -10,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { User } from "@shared/schema";
 
 type HeaderProps = {
   sidebarOpen: boolean;
@@ -17,12 +17,42 @@ type HeaderProps = {
 };
 
 export function Header({ sidebarOpen, toggleSidebar }: HeaderProps) {
-  const { user, logoutMutation } = useAuth();
   const [_, setLocation] = useLocation();
+  const [user, setUser] = useState<User | null>(null);
   
-  const handleLogout = () => {
-    logoutMutation.mutate();
-    setLocation("/auth");
+  // Buscar o usuário ao montar o componente
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const res = await fetch('/api/user');
+        if (res.ok) {
+          const userData = await res.json();
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar usuário:', error);
+      }
+    }
+    
+    fetchUser();
+  }, []);
+  
+  const handleLogout = async () => {
+    try {
+      const res = await fetch('/api/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (res.ok) {
+        setUser(null);
+        setLocation("/auth");
+      }
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
   };
   
   const getInitials = (name: string) => {
@@ -67,7 +97,7 @@ export function Header({ sidebarOpen, toggleSidebar }: HeaderProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-2 px-2">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={user?.avatar} alt={user?.nome || "Usuário"} />
+                  <AvatarImage src={user?.avatar ? user.avatar : undefined} alt={user?.nome || "Usuário"} />
                   <AvatarFallback>{user?.nome ? getInitials(user.nome) : "U"}</AvatarFallback>
                 </Avatar>
                 <span className="hidden md:block text-sm font-medium text-neutral-800">
