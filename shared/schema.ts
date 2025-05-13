@@ -96,8 +96,9 @@ export const webhooks = pgTable("webhooks", {
   evento: text("evento").notNull(),
   url: text("url").notNull(),
   ativo: boolean("ativo").notNull().default(true),
-  ultimoStatus: text("ultimo_status"),
-  ultimaExecucao: timestamp("ultima_execucao"),
+  ultimoStatus: integer("ultimoStatus"),
+  ultimaExecucao: timestamp("ultimaExecucao"),
+  dataCriacao: timestamp("dataCriacao").notNull().defaultNow(),
 });
 
 export const insertWebhookSchema = createInsertSchema(webhooks).pick({

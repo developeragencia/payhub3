@@ -92,11 +92,11 @@ export async function setupDatabase() {
       await db.insert(checkouts).values({
         nome: "Checkout Padrão",
         url: "/checkout/curso-marketing",
-        produtoId: produto.id,
+        produto_id: produto.id,
         layout: "padrao",
         config: { tema: "claro", showLogo: true },
         ativo: true,
-        dataCriacao: new Date()
+        data_criacao: new Date()
       });
       
       console.log("Produto e checkout de demonstração criados");
@@ -114,7 +114,8 @@ export async function setupDatabase() {
         url: "https://api.seusite.com.br/webhooks/payments",
         ativo: true,
         ultimoStatus: null,
-        ultimaExecucao: null
+        ultimaExecucao: null,
+        dataCriacao: new Date()
       });
       console.log("Webhook de demonstração criado");
     } else {
@@ -132,16 +133,16 @@ export async function setupDatabase() {
       
       if (checkout) {
         await db.insert(transacoes).values({
-          checkoutId: checkout.id,
-          clienteNome: "Maria Oliveira",
-          clienteEmail: "maria@exemplo.com",
+          checkout_id: checkout.id,
+          cliente_nome: "Maria Oliveira",
+          cliente_email: "maria@exemplo.com",
           valor: 1458.90,
           moeda: "BRL",
           status: "aprovado",
           metodo: "Cartão de Crédito",
           referencia: "TRX-78945",
           data: new Date(),
-          dataCriacao: new Date(),
+          data_criacao: new Date(),
           metadata: { origem: "demonstracao" }
         });
         console.log("Transação de demonstração criada");
