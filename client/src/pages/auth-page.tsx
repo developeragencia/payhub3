@@ -163,66 +163,51 @@ export default function AuthPage() {
   
   return (
     <div className="min-h-screen bg-white relative overflow-hidden flex items-center justify-center">
-      {/* Ondas decorativas */}
-      <div className="absolute bottom-0 left-0 right-0 h-64 -z-10">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-full text-blue-50">
-          <path fill="currentColor" fillOpacity="1" d="M0,128L48,144C96,160,192,192,288,176C384,160,480,96,576,74.7C672,53,768,75,864,96C960,117,1056,139,1152,133.3C1248,128,1344,96,1392,80L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-        </svg>
-      </div>
-      <div className="absolute top-0 left-0 right-0 h-64 -z-10 opacity-70">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-full rotate-180 text-blue-50">
-          <path fill="currentColor" fillOpacity="1" d="M0,128L48,144C96,160,192,192,288,176C384,160,480,96,576,74.7C672,53,768,75,864,96C960,117,1056,139,1152,133.3C1248,128,1344,96,1392,80L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-        </svg>
-      </div>
-      
-      {/* Círculos decorativos */}
-      <div className="absolute top-20 left-20 w-64 h-64 rounded-full bg-gradient-to-tr from-blue-100 to-blue-50 -z-10 blur-3xl opacity-70"></div>
-      <div className="absolute bottom-20 right-20 w-64 h-64 rounded-full bg-gradient-to-br from-indigo-100 to-blue-50 -z-10 blur-3xl opacity-70"></div>
       
       {/* Container principal */}
       <div className="container mx-auto px-4 py-8 flex flex-col md:flex-row items-center gap-8 md:gap-16">
         {/* Lado esquerdo - ilustração e texto */}
-        <div className="w-full md:w-1/2 space-y-8 animate-fade-in">
+        <div className="w-full md:w-1/2 space-y-8 animate-fade-in rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 py-10 px-8 text-white shadow-xl">
           <div className="text-center md:text-left space-y-4">
             <div className="flex items-center justify-center md:justify-start mb-6">
-              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-3 rounded-2xl shadow-lg">
-                <CreditCard className="h-8 w-8 text-white" />
+              <div className="bg-white p-3 rounded-2xl shadow-lg">
+                <CreditCard className="h-8 w-8 text-blue-600" />
               </div>
-              <h1 className="ml-4 text-3xl md:text-4xl font-extrabold text-gray-900">
-                PAY<span className="text-blue-600">HUB</span>
+              <h1 className="ml-4 text-3xl md:text-4xl font-extrabold text-white">
+                PAY<span className="text-blue-200">HUB</span>
               </h1>
             </div>
             
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-              A plataforma completa para <span className="text-blue-600">pagamentos online</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+              A plataforma completa para <span className="text-blue-200">pagamentos online</span>
             </h2>
             
-            <p className="text-lg text-gray-600 max-w-lg">
+            <p className="text-lg text-blue-100 max-w-lg">
               Aceite pagamentos, gerencie vendas e acompanhe o crescimento do seu negócio em um único lugar.
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 staggered-fade-in">
             <FeatureCard 
-              icon={<CreditCard className="h-6 w-6 text-blue-600" />}
+              icon={<CreditCard className="h-6 w-6 text-white" />}
               title="Pagamentos Seguros"
               description="Processe transações com segurança e facilidade."
             />
             
             <FeatureCard 
-              icon={<Wallet className="h-6 w-6 text-blue-600" />}
+              icon={<Wallet className="h-6 w-6 text-white" />}
               title="Múltiplos Métodos"
               description="Cartões, boletos, Pix e muito mais."
             />
             
             <FeatureCard 
-              icon={<LayoutDashboard className="h-6 w-6 text-blue-600" />}
+              icon={<LayoutDashboard className="h-6 w-6 text-white" />}
               title="Dashboard Completo"
               description="Visualize e gerencie todos os dados em um só lugar."
             />
             
             <FeatureCard 
-              icon={<Shield className="h-6 w-6 text-blue-600" />}
+              icon={<Shield className="h-6 w-6 text-white" />}
               title="Proteção Antifraude"
               description="Tecnologia avançada contra fraudes."
             />
@@ -231,11 +216,11 @@ export default function AuthPage() {
           <div className="pt-6 hidden md:block">
             <div className="flex items-center space-x-4">
               <div className="flex -space-x-4">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium border-2 border-white">JD</div>
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-medium border-2 border-white">ML</div>
-                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-medium border-2 border-white">TS</div>
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-medium border-2 border-blue-400">JD</div>
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-medium border-2 border-blue-400">ML</div>
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-medium border-2 border-blue-400">TS</div>
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-blue-100">
                 Junte-se a mais de <span className="font-semibold">2,500+</span> empresas
               </div>
             </div>
@@ -590,13 +575,13 @@ function FeatureCard({ icon, title, description }: {
   description: string;
 }) {
   return (
-    <div className="flex items-start gap-4 p-5 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+    <div className="flex items-start gap-4 p-5 bg-blue-500/20 backdrop-blur-sm rounded-xl shadow-sm border border-blue-300/30 hover:bg-blue-500/30 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
       <div className="flex-shrink-0 mt-1">
         {icon}
       </div>
       <div>
-        <h3 className="font-semibold text-gray-900">{title}</h3>
-        <p className="text-sm text-gray-600 mt-1">{description}</p>
+        <h3 className="font-semibold text-white">{title}</h3>
+        <p className="text-sm text-blue-100 mt-1">{description}</p>
       </div>
     </div>
   );
