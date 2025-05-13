@@ -12,8 +12,10 @@ import PagamentoPage from "@/pages/pagamento-page";
 import TransacaoStatusPage from "@/pages/transacao-status-page";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import React from "react";
 
 // Componente para rotas protegidas
+// PrivateRoute com uso de useAuth + props para o MainLayout
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
   
@@ -32,7 +34,19 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
     return <Redirect to="/auth" />;
   }
   
-  // Se estiver autenticado, renderiza o conteúdo protegido
+  // Passa o usuário para os componentes filhos através de React.cloneElement se for um único filho
+  // ou React.Children.map se forem múltiplos filhos
+  if (React.isValidElement(children)) {
+    // Caso seja um único elemento
+    return React.cloneElement(children, { user });
+  } else if (Array.isArray(children)) {
+    // Caso seja um array de elementos
+    return <>{React.Children.map(children, child => 
+      React.isValidElement(child) ? React.cloneElement(child, { user }) : child
+    )}</>;
+  }
+  
+  // Se estiver autenticado, renderiza o conteúdo protegido normalmente
   return <>{children}</>;
 }
 
