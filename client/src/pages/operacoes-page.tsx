@@ -847,6 +847,93 @@ export default function OperacoesPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Modal para visualizar dados do Webhook */}
+      <Dialog open={isViewWebhookDialogOpen} onOpenChange={setIsViewWebhookDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <WebhookIcon className="h-5 w-5 mr-2" />
+              Detalhes do Webhook #{selectedWebhook?.id}
+            </DialogTitle>
+            <DialogDescription>
+              Visualize os dados completos do webhook.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-sm font-medium mb-1">Evento</div>
+                <div className="p-2 bg-muted rounded-md">{selectedWebhook?.evento}</div>
+              </div>
+              <div>
+                <div className="text-sm font-medium mb-1">Status</div>
+                <div className="p-2 bg-muted rounded-md">
+                  {selectedWebhook?.ativo ? (
+                    <Badge variant="outline" className="bg-success bg-opacity-10 text-success">
+                      <Check className="mr-1 h-3 w-3" /> Ativo
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="bg-warning bg-opacity-10 text-warning">
+                      <AlertCircle className="mr-1 h-3 w-3" /> Inativo
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="text-sm font-medium mb-1">URL</div>
+              <div className="p-2 bg-muted rounded-md flex justify-between items-center">
+                <code className="text-xs">{selectedWebhook?.url}</code>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 ml-2"
+                  onClick={() => {
+                    navigator.clipboard.writeText(selectedWebhook?.url || '');
+                    toast({
+                      title: "URL copiada",
+                      description: "URL do webhook copiada para a área de transferência",
+                    });
+                  }}
+                >
+                  <Copy className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
+            
+            <div>
+              <div className="text-sm font-medium mb-1">Última Execução</div>
+              <div className="p-2 bg-muted rounded-md">
+                {selectedWebhook?.ultimaExecucao ? formatDate(selectedWebhook.ultimaExecucao) : 'Nunca executado'}
+              </div>
+            </div>
+
+            {selectedWebhook?.dados && (
+              <div>
+                <div className="text-sm font-medium mb-1">Dados</div>
+                <div className="p-2 bg-muted rounded-md overflow-auto max-h-60">
+                  <pre className="text-xs whitespace-pre-wrap">
+                    {typeof selectedWebhook.dados === 'string' 
+                      ? selectedWebhook.dados 
+                      : JSON.stringify(selectedWebhook.dados, null, 2)
+                    }
+                  </pre>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline"
+              onClick={() => setIsViewWebhookDialogOpen(false)}
+            >
+              Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 }
