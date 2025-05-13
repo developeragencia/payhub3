@@ -226,6 +226,11 @@ export default function OperacoesPage() {
     setSelectedTransacao(transacao);
     setIsViewTransacaoDialogOpen(true);
   };
+  
+  const handleViewWebhook = (webhook: Webhook) => {
+    setSelectedWebhook(webhook);
+    setIsViewWebhookDialogOpen(true);
+  };
 
   // Formatação de data
   const formatDate = (dateString: string | Date) => {
@@ -260,7 +265,7 @@ export default function OperacoesPage() {
   };
 
   return (
-    <MainLayout title="Operações" description="Gerenciar transações e webhooks">
+    <MainLayout pageTitle="Operações">
       <Card className="mb-6">
         <CardHeader className="pb-3">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -525,6 +530,10 @@ export default function OperacoesPage() {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleViewWebhook(webhook)}>
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  Ver dados
+                                </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => handleEditWebhook(webhook)}>
                                   <Pencil className="h-4 w-4 mr-2" />
                                   Editar
