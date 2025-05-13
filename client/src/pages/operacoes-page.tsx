@@ -698,9 +698,8 @@ export default function OperacoesPage() {
                 <div className="text-sm font-medium mb-1">Dados</div>
                 <div className="p-2 bg-muted rounded-md overflow-auto max-h-60">
                   <pre className="text-xs whitespace-pre-wrap">
-                    {typeof selectedWebhook.dados === 'string' 
-                      ? selectedWebhook.dados 
-                      : JSON.stringify(selectedWebhook.dados, null, 2)}
+                    {/* Convertendo dados para string de forma segura */}
+                    {JSON.stringify(selectedWebhook.dados, null, 2)}
                   </pre>
                 </div>
               </div>
