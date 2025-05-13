@@ -74,7 +74,6 @@ router.post("/", isAuthenticated, async (req, res) => {
     await storage.createAtividade({
       tipo: "cliente_criado",
       descricao: `Cliente ${novoCliente.nome} criado`,
-      data: new Date(),
       icone: "user-add-line",
       cor: "success",
       userId: req.user?.id
@@ -130,7 +129,6 @@ router.put("/:id", isAuthenticated, async (req, res) => {
     await storage.createAtividade({
       tipo: "cliente_atualizado",
       descricao: `Cliente ${clienteAtualizado?.nome} atualizado`,
-      data: new Date(),
       icone: "user-edit-line",
       cor: "primary",
       userId: req.user?.id
@@ -168,7 +166,6 @@ router.delete("/:id", isAuthenticated, async (req, res) => {
       await storage.createAtividade({
         tipo: "cliente_excluido",
         descricao: `Cliente ${clienteExistente.nome} excluído`,
-        data: new Date(),
         icone: "delete-bin-line",
         cor: "danger",
         userId: req.user?.id

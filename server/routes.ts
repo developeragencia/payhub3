@@ -14,8 +14,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Configurar autenticação
   setupAuth(app);
   
-  // Registrar rotas do MercadoPago
+  // Registrar rotas
   app.use('/api', mercadopagoRoutes);
+  app.use('/api/clientes', clientesRoutes);
 
   // API de produtos
   app.get("/api/produtos", async (req, res, next) => {

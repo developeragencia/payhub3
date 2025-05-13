@@ -138,6 +138,7 @@ export const atividades = pgTable("atividades", {
 export const insertAtividadeSchema = createInsertSchema(atividades).pick({
   tipo: true,
   descricao: true,
+  data: true,
   metadados: true,
   icone: true,
   cor: true,
