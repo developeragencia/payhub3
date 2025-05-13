@@ -462,13 +462,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           dataCriacao: new Date()
         });
         
-        // Registrar atividade
+        // Registrar atividade (usando userId como null para rotas públicas)
         await storage.createAtividade({
           tipo: "transacao",
           descricao: `Nova transação iniciada - ${transacao.referencia}`,
           icone: "secure-payment-line",
           cor: "info",
-          userId: req.user?.id
+          userId: null
         });
       }
       
@@ -518,9 +518,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const webhook = webhooks.find(w => w.evento === `mercadopago.${topic}`);
       
       if (webhook) {
+        // Usar o novo schema updateWebhookSchema
         await storage.updateWebhook(webhook.id, {
-          ultimaExecucao: new Date(),
-          ultimoStatus: 'success'
+          ultimoStatus: 'success',
+          ultimaExecucao: new Date()
         });
         
         // Registrar atividade

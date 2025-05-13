@@ -3,7 +3,7 @@ import {
   produtos, type Produto, type InsertProduto,
   checkouts, type Checkout, type InsertCheckout,
   transacoes, type Transacao, type InsertTransacao,
-  webhooks, type Webhook, type InsertWebhook,
+  webhooks, type Webhook, type InsertWebhook, type updateWebhookSchema,
   atividades, type Atividade, type InsertAtividade
 } from "@shared/schema";
 import session from "express-session";

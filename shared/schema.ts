@@ -64,14 +64,17 @@ export const insertCheckoutSchema = createInsertSchema(checkouts).pick({
 // Transações
 export const transacoes = pgTable("transacoes", {
   id: serial("id").primaryKey(),
-  checkoutId: integer("checkout_id").notNull(),
+  checkoutId: integer("checkout_id"),
   clienteNome: text("cliente_nome").notNull(),
   clienteEmail: text("cliente_email").notNull(),
   valor: doublePrecision("valor").notNull(),
+  moeda: text("moeda").notNull().default("BRL"),
   status: text("status").notNull(),
   metodo: text("metodo").notNull(),
   data: timestamp("data").notNull().defaultNow(),
   referencia: text("referencia").notNull(),
+  metadata: jsonb("metadata"),
+  dataCriacao: timestamp("data_criacao").notNull().defaultNow(),
 });
 
 export const insertTransacaoSchema = createInsertSchema(transacoes).pick({
@@ -79,9 +82,12 @@ export const insertTransacaoSchema = createInsertSchema(transacoes).pick({
   clienteNome: true,
   clienteEmail: true,
   valor: true,
+  moeda: true,
   status: true,
   metodo: true,
   referencia: true,
+  metadata: true,
+  dataCriacao: true,
 });
 
 // Webhooks
@@ -98,6 +104,15 @@ export const insertWebhookSchema = createInsertSchema(webhooks).pick({
   evento: true,
   url: true,
   ativo: true,
+});
+
+// Schema para update de webhook - inclui campos especiais
+export const updateWebhookSchema = createInsertSchema(webhooks).pick({
+  url: true,
+  evento: true,
+  ativo: true,
+  ultimoStatus: true,
+  ultimaExecucao: true,
 });
 
 // Atividades
