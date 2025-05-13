@@ -119,12 +119,23 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+// Importações das novas páginas
+import DashboardPadraoPage from "@/pages/dashboard-padrao-page";
+import CheckoutLinkPage from "@/pages/checkout-link-page";
+import ListaLayoutPage from "@/pages/lista-layout-page";
+import PerfilPage from "@/pages/perfil-page";
+
 function Router() {
   return (
     <Switch>
       <Route path="/">
         <PrivateRoute>
           <DashboardPage />
+        </PrivateRoute>
+      </Route>
+      <Route path="/dashboard-padrao">
+        <PrivateRoute>
+          <DashboardPadraoPage />
         </PrivateRoute>
       </Route>
       <Route path="/produtos">
@@ -137,6 +148,16 @@ function Router() {
           <CheckoutPage />
         </PrivateRoute>
       </Route>
+      <Route path="/checkout-link">
+        <PrivateRoute>
+          <CheckoutLinkPage />
+        </PrivateRoute>
+      </Route>
+      <Route path="/lista-layout">
+        <PrivateRoute>
+          <ListaLayoutPage />
+        </PrivateRoute>
+      </Route>
       <Route path="/webhooks">
         <PrivateRoute>
           <OperacoesPage />
@@ -145,6 +166,11 @@ function Router() {
       <Route path="/transacoes">
         <PrivateRoute>
           <MercadoPagoCheckoutPage />
+        </PrivateRoute>
+      </Route>
+      <Route path="/perfil">
+        <PrivateRoute>
+          <PerfilPage />
         </PrivateRoute>
       </Route>
       <Route path="/pagamento" component={PagamentoPage} />
