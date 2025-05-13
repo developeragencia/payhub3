@@ -129,6 +129,12 @@ import PerfilPage from "@/pages/perfil-page";
 function Router() {
   return (
     <Switch>
+      <Route path="/auth" component={AuthPage} />
+      <Route path="/pagamento" component={PagamentoPage} />
+      <Route path="/transacao/sucesso" component={TransacaoStatusPage} />
+      <Route path="/transacao/falha" component={TransacaoStatusPage} />
+      <Route path="/transacao/pendente" component={TransacaoStatusPage} />
+      
       <Route path="/">
         <PrivateRoute>
           <DashboardPage />
@@ -179,11 +185,6 @@ function Router() {
           <PerfilPage />
         </PrivateRoute>
       </Route>
-      <Route path="/pagamento" component={PagamentoPage} />
-      <Route path="/transacao/sucesso" component={TransacaoStatusPage} />
-      <Route path="/transacao/falha" component={TransacaoStatusPage} />
-      <Route path="/transacao/pendente" component={TransacaoStatusPage} />
-      <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
   );
