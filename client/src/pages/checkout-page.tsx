@@ -22,8 +22,10 @@ import { cn } from "@/lib/utils";
 // Esquema de validação para o formulário
 const checkoutFormSchema = z.object({
   nome: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
-  descricao: z.string().min(5, "Descrição deve ter pelo menos 5 caracteres"),
   produtoId: z.coerce.number().min(1, "Selecione um produto"),
+  layout: z.string().default("padrao"),
+  url: z.string().default(""),
+  config: z.any().default({}),
   ativo: z.boolean().default(true)
 });
 
@@ -53,8 +55,10 @@ export default function CheckoutPage() {
     resolver: zodResolver(checkoutFormSchema),
     defaultValues: {
       nome: "",
-      descricao: "",
       produtoId: 0,
+      layout: "padrao",
+      url: "",
+      config: {},
       ativo: true
     }
   });
@@ -179,7 +183,7 @@ export default function CheckoutPage() {
                         <div>
                           <h3 className="font-medium">{checkout.nome}</h3>
                           <p className="text-sm text-muted-foreground mb-2">
-                            {checkout.descricao}
+                            Layout: {checkout.layout}
                           </p>
                         </div>
                         <div className="flex gap-1">
@@ -237,7 +241,7 @@ export default function CheckoutPage() {
                         <div>
                           <h3 className="font-medium">{checkout.nome}</h3>
                           <p className="text-sm text-muted-foreground">
-                            {checkout.descricao}
+                            Layout: {checkout.layout}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -335,13 +339,25 @@ export default function CheckoutPage() {
               
               <FormField
                 control={form.control}
-                name="descricao"
+                name="layout"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Descrição</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Descrição do checkout" {...field} />
-                    </FormControl>
+                    <FormLabel>Layout</FormLabel>
+                    <Select 
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um layout" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="padrao">Padrão</SelectItem>
+                        <SelectItem value="premium">Premium</SelectItem>
+                        <SelectItem value="basico">Básico</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
