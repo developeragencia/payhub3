@@ -95,27 +95,24 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 
 // Componente para rotas protegidas
 function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const [_, setLocation] = useLocation();
   const { user, isLoading } = useAuth();
   
-  useEffect(() => {
-    if (!isLoading && !user) {
-      setLocation("/auth");
-    }
-  }, [isLoading, user, setLocation]);
-  
+  // Estado de carregamento
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Carregando...</span>
       </div>
     );
   }
   
+  // Se não estiver autenticado, redireciona
   if (!user) {
     return <Redirect to="/auth" />;
   }
   
+  // Se estiver autenticado, renderiza o conteúdo protegido
   return <>{children}</>;
 }
 
