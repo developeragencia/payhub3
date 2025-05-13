@@ -18,7 +18,7 @@ interface HeaderProps {
   sidebarOpen: boolean;
   toggleSidebar: () => void;
   pageTitle?: string;
-  user: User;
+  user?: User | null;
 }
 
 export function Header({ sidebarOpen, toggleSidebar, pageTitle, user }: HeaderProps) {

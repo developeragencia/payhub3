@@ -22,7 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 interface SidebarProps {
   sidebarOpen: boolean;
   toggleSidebar: () => void;
-  user: User;
+  user: User | null | undefined;
 }
 
 interface NavItemProps {

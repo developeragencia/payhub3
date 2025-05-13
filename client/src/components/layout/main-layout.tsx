@@ -4,15 +4,13 @@ import { Sidebar } from "./sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/use-auth";
 
 interface MainLayoutProps {
   children: ReactNode;
   pageTitle?: string;
   loading?: boolean;
 }
-
-import { useAuth } from "@/App";
 
 export function MainLayout({ children, pageTitle, loading = false }: MainLayoutProps) {
   const { user, isLoading } = useAuth(); // Usando o contexto global de autenticação
@@ -42,7 +40,7 @@ export function MainLayout({ children, pageTitle, loading = false }: MainLayoutP
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <Sidebar sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} user={user} />
+      {user && <Sidebar sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} user={user} />}
 
       <div className="relative flex flex-1 flex-col overflow-hidden">
         <Header 
