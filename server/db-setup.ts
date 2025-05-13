@@ -92,11 +92,11 @@ export async function setupDatabase() {
       await db.insert(checkouts).values({
         nome: "Checkout Padrão",
         url: "/checkout/curso-marketing",
-        produto_id: produto.id,
+        produtoId: produto.id,
         layout: "padrao",
         config: { tema: "claro", showLogo: true },
         ativo: true,
-        data_criacao: new Date()
+        dataCriacao: new Date()
       });
       
       console.log("Produto e checkout de demonstração criados");
@@ -133,16 +133,16 @@ export async function setupDatabase() {
       
       if (checkout) {
         await db.insert(transacoes).values({
-          checkout_id: checkout.id,
-          cliente_nome: "Maria Oliveira",
-          cliente_email: "maria@exemplo.com",
+          checkoutId: checkout.id,
+          clienteNome: "Maria Oliveira",
+          clienteEmail: "maria@exemplo.com",
           valor: 1458.90,
           moeda: "BRL",
           status: "aprovado",
           metodo: "Cartão de Crédito",
           referencia: "TRX-78945",
           data: new Date(),
-          data_criacao: new Date(),
+          dataCriacao: new Date(),
           metadata: { origem: "demonstracao" }
         });
         console.log("Transação de demonstração criada");

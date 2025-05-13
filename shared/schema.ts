@@ -45,10 +45,10 @@ export const checkouts = pgTable("checkouts", {
   id: serial("id").primaryKey(),
   nome: text("nome").notNull(),
   url: text("url").notNull(),
-  produtoId: integer("produto_id").notNull(),
+  produtoId: integer("produtoId").notNull(),
   layout: text("layout").notNull(),
   config: jsonb("config").notNull(),
-  dataCriacao: timestamp("data_criacao").notNull().defaultNow(),
+  dataCriacao: timestamp("dataCriacao").notNull().defaultNow(),
   ativo: boolean("ativo").notNull().default(true),
 });
 
@@ -64,9 +64,9 @@ export const insertCheckoutSchema = createInsertSchema(checkouts).pick({
 // Transações
 export const transacoes = pgTable("transacoes", {
   id: serial("id").primaryKey(),
-  checkoutId: integer("checkout_id"),
-  clienteNome: text("cliente_nome").notNull(),
-  clienteEmail: text("cliente_email").notNull(),
+  checkoutId: integer("checkoutId"),
+  clienteNome: text("clienteNome").notNull(),
+  clienteEmail: text("clienteEmail").notNull(),
   valor: doublePrecision("valor").notNull(),
   moeda: text("moeda").notNull().default("BRL"),
   status: text("status").notNull(),
@@ -74,7 +74,7 @@ export const transacoes = pgTable("transacoes", {
   data: timestamp("data").notNull().defaultNow(),
   referencia: text("referencia").notNull(),
   metadata: jsonb("metadata"),
-  dataCriacao: timestamp("data_criacao").notNull().defaultNow(),
+  dataCriacao: timestamp("dataCriacao").notNull().defaultNow(),
 });
 
 export const insertTransacaoSchema = createInsertSchema(transacoes).pick({
@@ -126,7 +126,7 @@ export const atividades = pgTable("atividades", {
   data: timestamp("data").notNull().defaultNow(),
   icone: text("icone"),
   cor: text("cor"),
-  userId: integer("user_id"),
+  userId: integer("userId"),
 });
 
 export const insertAtividadeSchema = createInsertSchema(atividades).pick({
