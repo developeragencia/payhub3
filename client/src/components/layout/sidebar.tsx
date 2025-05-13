@@ -10,7 +10,8 @@ import {
   Settings,
   LogOut,
   XIcon,
-  ChevronRight
+  ChevronRight,
+  Users
 } from "lucide-react";
 import { User } from "@shared/schema";
 import { Button } from "@/components/ui/button";
@@ -167,6 +168,12 @@ export function Sidebar({ sidebarOpen, toggleSidebar, user }: SidebarProps) {
             icon={<CreditCard className="h-5 w-5" />}
             text="Transações"
             active={isActive("/transacoes")}
+          />
+          <NavItem
+            href="/clientes"
+            icon={<Users className="h-5 w-5" />}
+            text="Clientes"
+            active={isActive("/clientes")}
           />
           <NavItem
             href="/perfil"
