@@ -57,6 +57,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+// Interface para transformar dados do webhook para React
+interface WebhookData {
+  dados: any;
+}
 import { queryClient, apiRequest } from "@/lib/queryClient";
 
 // Definir o schema para criar/editar webhook
@@ -698,10 +702,9 @@ export default function OperacoesPage() {
                 <div className="text-sm font-medium mb-1">Dados</div>
                 <div className="p-2 bg-muted rounded-md overflow-auto max-h-60">
                   <pre className="text-xs whitespace-pre-wrap">
-                    {/* @ts-ignore - Ignorando erro de tipagem temporariamente */}
                     {typeof selectedWebhook.dados === 'string' 
                       ? selectedWebhook.dados 
-                      : JSON.stringify(selectedWebhook.dados, null, 2)}
+                      : JSON.stringify(selectedWebhook.dados as WebhookData['dados'], null, 2)}
                   </pre>
                 </div>
               </div>

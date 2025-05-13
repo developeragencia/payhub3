@@ -30,31 +30,18 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, isLoading: authLoading } = useAuth();
   const [isPending, setIsPending] = useState(false);
   const [_, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<string>("login");
   const { toast } = useToast();
   
-  // Verificar se o usuário já está autenticado
+  // Redirecionar se usuário já estiver autenticado
   useEffect(() => {
-    async function checkAuth() {
-      try {
-        const res = await fetch('/api/user');
-        if (res.ok) {
-          setIsLoggedIn(true);
-          setLocation("/");
-        }
-      } catch (error) {
-        console.error("Erro ao verificar autenticação:", error);
-      } finally {
-        setIsLoading(false);
-      }
+    if (user) {
+      setLocation("/");
     }
-    
-    checkAuth();
-  }, [setLocation]);
+  }, [user, setLocation]);
   
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -75,36 +62,22 @@ export default function AuthPage() {
     },
   });
   
+  const { loginMutation, registerMutation } = useAuth();
+  
   const onLoginSubmit = async (data: LoginFormValues) => {
     setIsPending(true);
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      
-      if (response.ok) {
-        const user = await response.json();
-        toast({
-          title: "Login realizado com sucesso",
-          description: `Bem-vindo, ${user.nome || user.username}!`,
-        });
-        setLocation("/");
-      } else {
-        const error = await response.json();
-        throw new Error(error.message || "Credenciais inválidas");
-      }
+      await loginMutation.mutateAsync(data);
+      setLocation("/");
     } catch (error) {
-      toast({
-        title: "Falha no login",
-        description: error instanceof Error ? error.message : "Erro ao fazer login",
-        variant: "destructive",
-      });
+      // Erro já tratado no hook useAuth via toast
+      console.error("Erro no login:", error);
     } finally {
       setIsPending(false);
     }
   };
+  
+  // registerMutation já foi extraído acima
   
   const onRegisterSubmit = async (data: RegisterFormValues) => {
     setIsPending(true);
@@ -117,35 +90,17 @@ export default function AuthPage() {
         avatar: null
       };
       
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(registerData)
-      });
-      
-      if (response.ok) {
-        const user = await response.json();
-        toast({
-          title: "Conta criada com sucesso",
-          description: `Bem-vindo, ${user.nome}!`,
-        });
-        setLocation("/");
-      } else {
-        const error = await response.json();
-        throw new Error(error.message || "Erro ao criar conta");
-      }
+      await registerMutation.mutateAsync(registerData);
+      setLocation("/");
     } catch (error) {
-      toast({
-        title: "Falha no cadastro",
-        description: error instanceof Error ? error.message : "Erro ao criar conta",
-        variant: "destructive",
-      });
+      // Erro já tratado no hook useAuth via toast
+      console.error("Erro no cadastro:", error);
     } finally {
       setIsPending(false);
     }
   };
   
-  if (isLoading) {
+  if (authLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
         <div className="relative">
@@ -158,7 +113,7 @@ export default function AuthPage() {
     );
   }
   
-  if (isLoggedIn) {
+  if (user) {
     return null; // Redirecionará via useEffect
   }
   
