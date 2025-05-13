@@ -390,7 +390,7 @@ export default function CheckoutLinkPage() {
                 />
                 <FormField
                   control={form.control}
-                  name="configuracao"
+                  name="config"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Configuração (JSON)</FormLabel>

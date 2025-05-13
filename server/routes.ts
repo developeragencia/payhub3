@@ -6,9 +6,15 @@ import { insertProdutoSchema, insertCheckoutSchema, insertTransacaoSchema, inser
 import { z } from "zod";
 import { createPayment, createPreference, processWebhook } from "./mercadopago";
 
+// Importação das rotas MercadoPago
+import mercadopagoRoutes from "./routes/mercadopago";
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configurar autenticação
   setupAuth(app);
+  
+  // Registrar rotas do MercadoPago
+  app.use('/api', mercadopagoRoutes);
 
   // API de produtos
   app.get("/api/produtos", async (req, res, next) => {

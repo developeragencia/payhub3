@@ -98,6 +98,7 @@ export const webhooks = pgTable("webhooks", {
   ativo: boolean("ativo").notNull().default(true),
   ultimoStatus: integer("ultimoStatus"),
   ultimaExecucao: timestamp("ultimaExecucao"),
+  dados: jsonb("dados"),
   dataCriacao: timestamp("dataCriacao").notNull().defaultNow(),
 });
 
@@ -105,6 +106,9 @@ export const insertWebhookSchema = createInsertSchema(webhooks).pick({
   evento: true,
   url: true,
   ativo: true,
+  ultimoStatus: true,
+  ultimaExecucao: true,
+  dados: true,
 });
 
 // Schema para update de webhook - todos os campos são opcionais
@@ -124,17 +128,21 @@ export const atividades = pgTable("atividades", {
   tipo: text("tipo").notNull(),
   descricao: text("descricao").notNull(),
   data: timestamp("data").notNull().defaultNow(),
+  metadados: jsonb("metadados"),
   icone: text("icone"),
   cor: text("cor"),
   userId: integer("userId"),
+  dataCriacao: timestamp("dataCriacao").notNull().defaultNow(),
 });
 
 export const insertAtividadeSchema = createInsertSchema(atividades).pick({
   tipo: true,
   descricao: true,
+  metadados: true,
   icone: true,
   cor: true,
   userId: true,
+  dataCriacao: true,
 });
 
 // Export types
