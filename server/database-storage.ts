@@ -77,7 +77,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteProduto(id: number): Promise<boolean> {
     const result = await db.delete(produtos).where(eq(produtos.id, id));
-    return result.rowCount > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   // Checkouts
@@ -106,7 +106,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteCheckout(id: number): Promise<boolean> {
     const result = await db.delete(checkouts).where(eq(checkouts.id, id));
-    return result.rowCount > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   // Transações
@@ -153,7 +153,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteWebhook(id: number): Promise<boolean> {
     const result = await db.delete(webhooks).where(eq(webhooks.id, id));
-    return result.rowCount > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   // Atividades
