@@ -1,8 +1,8 @@
-import { Produto } from "@shared/schema";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Produto } from "@shared/schema";
 import { CheckoutButton } from "@/components/mercadopago/checkout-button";
 import { formatCurrency } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 interface ProdutoCardProps {
   produto: Produto;
@@ -12,58 +12,54 @@ interface ProdutoCardProps {
 
 export function ProdutoCard({ produto, onCheckoutSuccess, onCheckoutError }: ProdutoCardProps) {
   return (
-    <Card className="h-full flex flex-col overflow-hidden">
-      <CardHeader className="pb-3">
+    <Card className="overflow-hidden flex flex-col h-full">
+      {produto.imagem && (
+        <div className="aspect-video w-full overflow-hidden">
+          <img 
+            src={produto.imagem} 
+            alt={produto.nome} 
+            className="w-full h-full object-cover transition-transform hover:scale-105"
+          />
+        </div>
+      )}
+      
+      <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <CardTitle className="text-xl">{produto.nome}</CardTitle>
+          <CardTitle className="text-lg">{produto.nome}</CardTitle>
           {produto.ativo ? (
-            <Badge variant="secondary" className="ml-2">
-              Ativo
-            </Badge>
+            <Badge variant="default" className="bg-success hover:bg-success/80">Ativo</Badge>
           ) : (
-            <Badge variant="destructive" className="ml-2">
-              Inativo
-            </Badge>
+            <Badge variant="outline" className="text-muted-foreground">Inativo</Badge>
           )}
         </div>
-        <CardDescription className="line-clamp-2 text-sm">
-          {produto.descricao}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex-grow pb-0">
-        {produto.imagem && (
-          <div className="aspect-video w-full mb-4 rounded-md overflow-hidden">
-            <img
-              src={produto.imagem}
-              alt={produto.nome}
-              className="w-full h-full object-cover"
-            />
+        {produto.categoria && (
+          <div className="flex gap-2 mt-1">
+            <Badge variant="secondary" className="text-xs">
+              {produto.categoria}
+            </Badge>
           </div>
         )}
-
-        <div className="flex flex-col space-y-1.5">
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Preço:</span>
-            <span className="font-bold text-primary">
-              {formatCurrency(produto.preco)}
-            </span>
-          </div>
-          
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Categoria:</span>
-            <span className="text-sm">
-              {produto.categoria || "Não categorizado"}
-            </span>
-          </div>
+        {produto.descricao && (
+          <CardDescription className="line-clamp-2">
+            {produto.descricao}
+          </CardDescription>
+        )}
+      </CardHeader>
+      
+      <CardContent className="pb-2 flex-grow">
+        <div className="flex justify-between items-center p-3 bg-neutral-100 rounded-md">
+          <span className="font-medium">Preço:</span>
+          <span className="text-xl font-bold text-primary">
+            {formatCurrency(produto.preco)}
+          </span>
         </div>
       </CardContent>
-      <CardFooter className="pt-4 mt-auto">
-        <CheckoutButton
+      
+      <CardFooter className="pt-0">
+        <CheckoutButton 
           produtoId={produto.id}
-          nome={produto.nome}
-          preco={produto.preco}
-          descricao={produto.descricao || ""}
-          className="w-full"
+          buttonText="Pagar com MercadoPago"
+          fullWidth
           onSuccess={onCheckoutSuccess}
           onError={onCheckoutError}
         />

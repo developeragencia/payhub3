@@ -5,90 +5,90 @@ import { useToast } from "@/hooks/use-toast";
 
 interface CheckoutButtonProps {
   produtoId: number;
-  nome: string;
-  preco: number;
-  descricao?: string;
+  buttonText?: string;
+  variant?: "default" | "outline" | "secondary" | "destructive";
+  fullWidth?: boolean;
   onSuccess?: (data: any) => void;
   onError?: (error: any) => void;
-  className?: string;
-  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 }
 
 export function CheckoutButton({
   produtoId,
-  nome,
-  preco,
-  descricao = "",
+  buttonText = "Pagar com MercadoPago",
+  variant = "default",
+  fullWidth = false,
   onSuccess,
-  onError,
-  className,
-  variant = "default"
+  onError
 }: CheckoutButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleCheckout = async () => {
+  const handleClick = async () => {
     try {
       setIsLoading(true);
+
+      // Vamos buscar o produto com base no ID
+      const produtoResponse = await fetch(`/api/produtos/${produtoId}`);
+      if (!produtoResponse.ok) {
+        throw new Error('Produto não encontrado');
+      }
       
-      // Obtem a URL do site atual para o retorno
-      const baseUrl = window.location.origin;
+      const produto = await produtoResponse.json();
       
-      // Prepara os dados para criar uma preferência de pagamento
-      const preferenceData = {
-        items: [
-          {
-            id: produtoId.toString(),
-            title: nome,
-            description: descricao,
-            quantity: 1,
-            unit_price: preco,
-            currency_id: "BRL"
-          }
-        ],
-        backUrls: {
-          success: `${baseUrl}/transacao/sucesso`,
-          failure: `${baseUrl}/transacao/falha`,
-          pending: `${baseUrl}/transacao/pendente`
-        },
-        notificationUrl: `${baseUrl}/api/mercadopago/webhook`
+      // Criar os itens para a preferência
+      const items = [{
+        id: produto.id.toString(),
+        title: produto.nome,
+        quantity: 1,
+        unit_price: produto.preco,
+        description: produto.descricao,
+        picture_url: produto.imagem
+      }];
+
+      // URLs de retorno
+      const backUrls = {
+        success: `${window.location.origin}/transacao/sucesso`,
+        failure: `${window.location.origin}/transacao/falha`,
+        pending: `${window.location.origin}/transacao/pendente`
       };
-      
-      // Envia a solicitação para criar a preferência
-      const response = await fetch('/api/mercadopago/preference', {
+
+      // Fazer a requisição para criar a preferência
+      const preferenceResponse = await fetch('/api/mercadopago/preference', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(preferenceData)
+        body: JSON.stringify({
+          items,
+          backUrls,
+          notificationUrl: `${window.location.origin}/api/mercadopago/webhook`
+        })
       });
-      
-      if (!response.ok) {
-        throw new Error('Falha ao criar preferência de pagamento');
+
+      if (!preferenceResponse.ok) {
+        const errorData = await preferenceResponse.json();
+        throw new Error(errorData.message || 'Erro ao criar preferência de pagamento');
       }
+
+      // Obter a URL do checkout
+      const preference = await preferenceResponse.json();
       
-      const data = await response.json();
-      
-      // Abre a URL do checkout
-      if (data.init_point) {
-        window.open(data.init_point, '_blank');
-        
-        if (onSuccess) {
-          onSuccess(data);
-        }
-        
-        toast({
-          title: "Checkout iniciado",
-          description: "Você foi redirecionado para a página de pagamento",
-        });
+      // Chamar o callback de sucesso, se fornecido
+      if (onSuccess) {
+        onSuccess(preference);
+      }
+
+      // Redirecionar para a URL do checkout do MercadoPago
+      if (preference.init_point) {
+        window.location.href = preference.init_point;
       } else {
-        throw new Error('URL de pagamento não encontrada na resposta');
+        throw new Error('URL de checkout não encontrada na resposta');
       }
     } catch (error) {
-      console.error('Erro ao iniciar checkout:', error);
+      console.error("Erro ao iniciar checkout:", error);
       
       toast({
-        title: "Erro ao iniciar pagamento",
+        title: "Erro ao iniciar checkout",
         description: error instanceof Error ? error.message : "Ocorreu um erro inesperado",
         variant: "destructive",
       });
@@ -102,11 +102,11 @@ export function CheckoutButton({
   };
 
   return (
-    <Button 
-      onClick={handleCheckout} 
-      disabled={isLoading}
-      className={className}
+    <Button
       variant={variant}
+      onClick={handleClick}
+      disabled={isLoading}
+      className={fullWidth ? "w-full" : ""}
     >
       {isLoading ? (
         <>
@@ -114,7 +114,7 @@ export function CheckoutButton({
           Processando...
         </>
       ) : (
-        "Pagar com MercadoPago"
+        buttonText
       )}
     </Button>
   );
