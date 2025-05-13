@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
-import { useAuth } from "@/hooks/use-auth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Loader2 } from "lucide-react";
 
@@ -9,10 +8,10 @@ type MainLayoutProps = {
   children: React.ReactNode;
   title?: string;
   description?: string;
+  loading?: boolean;
 };
 
-export function MainLayout({ children, title, description }: MainLayoutProps) {
-  const { user, isLoading } = useAuth();
+export function MainLayout({ children, title, description, loading = false }: MainLayoutProps) {
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   
@@ -24,7 +23,7 @@ export function MainLayout({ children, title, description }: MainLayoutProps) {
     setSidebarOpen(!sidebarOpen);
   };
   
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

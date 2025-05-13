@@ -1,9 +1,8 @@
 import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
 
 // Configuração do cliente com a chave privada
-const client = new MercadoPagoConfig({ 
-  accessToken: 'TEST-1012316033860073-021220-e1dafb22aef47bbe9e1e4611973a955c-554634053' 
-});
+const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN || 'TEST-1012316033860073-021220-e1dafb22aef47bbe9e1e4611973a955c-554634053';
+const client = new MercadoPagoConfig({ accessToken });
 
 // Instanciando os objetos para API
 const payment = new Payment(client);
