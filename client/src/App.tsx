@@ -11,7 +11,7 @@ import MercadoPagoCheckoutPage from "@/pages/mercadopago-checkout";
 import PagamentoPage from "@/pages/pagamento-page";
 import TransacaoStatusPage from "@/pages/transacao-status-page";
 import { Loader2 } from "lucide-react";
-import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 
 // Componente para rotas protegidas
 function PrivateRoute({ children }: { children: React.ReactNode }) {
