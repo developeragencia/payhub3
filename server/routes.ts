@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertProdutoSchema, insertCheckoutSchema, insertTransacaoSchema, insertWebhookSchema } from "@shared/schema";
+import { insertProdutoSchema, insertCheckoutSchema, insertTransacaoSchema, insertWebhookSchema, updateWebhookSchema } from "@shared/schema";
 import { z } from "zod";
 import { createPayment, createPreference, processWebhook } from "./mercadopago";
 
@@ -369,7 +369,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "ID inválido" });
       }
       
-      const validatedData = insertWebhookSchema.partial().parse(req.body);
+      const validatedData = updateWebhookSchema.parse(req.body);
       const webhook = await storage.updateWebhook(id, validatedData);
       
       if (!webhook) {
@@ -519,10 +519,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (webhook) {
         // Usar o novo schema updateWebhookSchema
-        await storage.updateWebhook(webhook.id, {
+        await storage.updateWebhook(webhook.id, updateWebhookSchema.parse({
           ultimoStatus: 'success',
           ultimaExecucao: new Date()
-        });
+        }));
         
         // Registrar atividade
         await storage.createAtividade({

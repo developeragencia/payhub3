@@ -10,6 +10,9 @@ import { z } from "zod";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 
+// Tipo para o session store
+type SessionStore = ReturnType<typeof createMemoryStore>;
+
 const MemoryStore = createMemoryStore(session);
 
 // Interface de armazenamento
@@ -51,7 +54,7 @@ export interface IStorage {
   createAtividade(atividade: InsertAtividade): Promise<Atividade>;
   
   // Store de sessão para autenticação
-  sessionStore: session.SessionStore;
+  sessionStore: SessionStore;
 }
 
 export class MemStorage implements IStorage {
