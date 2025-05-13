@@ -228,6 +228,15 @@ export default function DashboardPage() {
 
   return (
     <MainLayout pageTitle="Dashboard" loading={loading}>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold tracking-tight text-gradient">
+          Dashboard
+        </h1>
+        <p className="text-muted-foreground">
+          Bem-vindo ao painel administrativo. Confira os principais indicadores de desempenho.
+        </p>
+      </div>
+      
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Transações Totais"
@@ -263,48 +272,149 @@ export default function DashboardPage() {
         />
       </div>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="relative my-8">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-muted"></div>
+        </div>
+        <div className="relative flex justify-center">
+          <div className="bg-background px-4">
+            <span className="bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent text-sm font-semibold">
+              Análises & Atividades
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <AtividadesRecentes atividades={atividades} />
         
-        <Card>
-          <CardHeader>
-            <CardTitle>Produtos Mais Vendidos</CardTitle>
-            <CardDescription>Top produtos por receita</CardDescription>
+        <Card className="hover-scale hover-shadow transition-all duration-300 border-r-4 border-r-secondary/70">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
+                    Produtos Mais Vendidos
+                  </span>
+                </CardTitle>
+                <CardDescription>Top produtos por receita</CardDescription>
+              </div>
+              <div className="h-9 w-9 rounded-full p-2 bg-gradient-to-br from-secondary/20 to-accent/10 text-secondary flex items-center justify-center">
+                <ShoppingCart className="h-5 w-5" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-5">
+              <div className="flex items-center animate-slide-up" style={{animationDelay: '100ms'}}>
+                <div className="w-full">
+                  <div className="mb-2 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mr-3">
+                        <span className="text-xs font-bold text-primary">1</span>
+                      </div>
+                      <div className="font-medium">Curso de Marketing Digital</div>
+                    </div>
+                    <div className="text-sm font-semibold">R$ 1.458,90</div>
+                  </div>
+                  <div className="h-3 w-full overflow-hidden rounded-full bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-sm">
+                    <div className="h-full w-[80%] bg-gradient-to-r from-primary/90 to-secondary/90 transition-all duration-700 ease-in-out"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center animate-slide-up" style={{animationDelay: '200ms'}}>
+                <div className="w-full">
+                  <div className="mb-2 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-secondary/20 to-accent/20 flex items-center justify-center mr-3">
+                        <span className="text-xs font-bold text-secondary">2</span>
+                      </div>
+                      <div className="font-medium">Consultoria de Marketing</div>
+                    </div>
+                    <div className="text-sm font-semibold">R$ 895,00</div>
+                  </div>
+                  <div className="h-3 w-full overflow-hidden rounded-full bg-gradient-to-r from-secondary/5 to-accent/5 backdrop-blur-sm">
+                    <div className="h-full w-[60%] bg-gradient-to-r from-secondary/90 to-accent/90 transition-all duration-700 ease-in-out"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center animate-slide-up" style={{animationDelay: '300ms'}}>
+                <div className="w-full">
+                  <div className="mb-2 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-accent/20 to-amber-500/20 flex items-center justify-center mr-3">
+                        <span className="text-xs font-bold text-accent">3</span>
+                      </div>
+                      <div className="font-medium">E-book de SEO</div>
+                    </div>
+                    <div className="text-sm font-semibold">R$ 159,90</div>
+                  </div>
+                  <div className="h-3 w-full overflow-hidden rounded-full bg-gradient-to-r from-accent/5 to-amber-500/5 backdrop-blur-sm">
+                    <div className="h-full w-[45%] bg-gradient-to-r from-accent/90 to-amber-500/90 transition-all duration-700 ease-in-out"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="hover-scale hover-shadow transition-all duration-300 border-b-4 border-b-accent/70">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="bg-gradient-to-r from-accent to-purple-500 bg-clip-text text-transparent">
+                    Transações Recentes
+                  </span>
+                </CardTitle>
+                <CardDescription>Últimas transações processadas</CardDescription>
+              </div>
+              <div className="h-9 w-9 rounded-full p-2 bg-gradient-to-br from-accent/20 to-purple-500/20 text-accent flex items-center justify-center">
+                <CreditCard className="h-5 w-5" />
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center">
-                <div className="w-full">
-                  <div className="mb-1 flex items-center justify-between">
-                    <div className="text-sm font-medium">Curso de Marketing Digital</div>
-                    <div className="text-sm text-muted-foreground">R$ 1.458,90</div>
+              <div className="bg-muted/30 dark:bg-muted/10 p-3 rounded-lg flex items-center justify-between animate-slide-up" style={{animationDelay: '100ms'}}>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center text-green-600 dark:text-green-400">
+                    <Wallet className="h-5 w-5" />
                   </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-primary/10">
-                    <div className="h-full w-[80%] bg-primary"></div>
+                  <div>
+                    <div className="font-medium">Maria Oliveira</div>
+                    <div className="text-xs text-muted-foreground">TRX-78945</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="font-semibold text-green-600 dark:text-green-400">R$ 1.458,90</div>
+                  <div className="text-xs text-muted-foreground">Aprovado</div>
+                </div>
+              </div>
+              
+              <div className="border-l-2 border-l-accent/50 pl-4">
+                <div className="text-xs text-muted-foreground font-medium mb-1">ATIVIDADE RECENTE</div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span className="text-muted-foreground">Pagamento confirmado</span>
+                    <span className="text-xs text-muted-foreground ml-auto">2h atrás</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-block w-2 h-2 rounded-full bg-secondary"></span>
+                    <span className="text-muted-foreground">Produto entregue</span>
+                    <span className="text-xs text-muted-foreground ml-auto">1h atrás</span>
                   </div>
                 </div>
               </div>
-              <div className="flex items-center">
-                <div className="w-full">
-                  <div className="mb-1 flex items-center justify-between">
-                    <div className="text-sm font-medium">Consultoria de Marketing</div>
-                    <div className="text-sm text-muted-foreground">R$ 895,00</div>
-                  </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-primary/10">
-                    <div className="h-full w-[60%] bg-primary"></div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <div className="w-full">
-                  <div className="mb-1 flex items-center justify-between">
-                    <div className="text-sm font-medium">E-book de SEO</div>
-                    <div className="text-sm text-muted-foreground">R$ 159,90</div>
-                  </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-primary/10">
-                    <div className="h-full w-[45%] bg-primary"></div>
-                  </div>
-                </div>
+              
+              <div className="flex mt-4 animate-fade-in" style={{animationDelay: '300ms'}}>
+                <button className="flex items-center text-sm text-primary font-medium hover:underline transition-all mx-auto">
+                  Ver todas as transações
+                  <ArrowUpRight className="ml-1 h-4 w-4" />
+                </button>
               </div>
             </div>
           </CardContent>
