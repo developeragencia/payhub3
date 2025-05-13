@@ -35,9 +35,9 @@ interface NavItemProps {
 function NavItem({ href, icon, text, badge, active }: NavItemProps) {
   return (
     <Link href={href}>
-      <a
+      <div
         className={cn(
-          "mb-1 flex items-center rounded-md px-3 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground",
+          "mb-1 flex items-center rounded-md px-3 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground cursor-pointer",
           active ? "bg-accent text-accent-foreground" : "text-muted-foreground"
         )}
       >
@@ -48,7 +48,7 @@ function NavItem({ href, icon, text, badge, active }: NavItemProps) {
             {badge}
           </span>
         )}
-      </a>
+      </div>
     </Link>
   );
 }
@@ -129,8 +129,14 @@ export function Sidebar({ sidebarOpen, toggleSidebar, user }: SidebarProps) {
           <NavItem
             href="/"
             icon={<Home className="h-5 w-5" />}
-            text="Dashboard"
+            text="Dashboard Admin"
             active={isActive("/")}
+          />
+          <NavItem
+            href="/dashboard-padrao"
+            icon={<Home className="h-5 w-5" />}
+            text="Dashboard Padrão"
+            active={isActive("/dashboard-padrao")}
           />
           <NavItem
             href="/produtos"
@@ -141,8 +147,20 @@ export function Sidebar({ sidebarOpen, toggleSidebar, user }: SidebarProps) {
           <NavItem
             href="/checkouts"
             icon={<ShoppingCart className="h-5 w-5" />}
-            text="Checkouts"
+            text="Checkout Builder"
             active={isActive("/checkouts")}
+          />
+          <NavItem
+            href="/checkout-link"
+            icon={<ShoppingCart className="h-5 w-5" />}
+            text="Checkout Link"
+            active={isActive("/checkout-link")}
+          />
+          <NavItem
+            href="/lista-layout"
+            icon={<Settings className="h-5 w-5" />}
+            text="Lista de Layout"
+            active={isActive("/lista-layout")}
           />
           <NavItem
             href="/transacoes"
@@ -151,16 +169,10 @@ export function Sidebar({ sidebarOpen, toggleSidebar, user }: SidebarProps) {
             active={isActive("/transacoes")}
           />
           <NavItem
-            href="/webhooks"
-            icon={<Bell className="h-5 w-5" />}
-            text="Webhooks"
-            active={isActive("/webhooks")}
-          />
-          <NavItem
-            href="/configuracoes"
-            icon={<Settings className="h-5 w-5" />}
-            text="Configurações"
-            active={isActive("/configuracoes")}
+            href="/perfil"
+            icon={<UserCircle className="h-5 w-5" />}
+            text="Meu Perfil"
+            active={isActive("/perfil")}
           />
           <div className="py-4">
             <div className="mx-3 h-px bg-border" />
