@@ -20,30 +20,41 @@ export function MainLayout({ children, pageTitle, loading = false }: MainLayoutP
   const { toast } = useToast();
 
   useEffect(() => {
+    // Usamos uma variável para controlar se o componente está montado
+    let isMounted = true;
+    
     async function fetchUser() {
       try {
-        const res = await apiRequest("GET", "/api/user");
-        
-        if (res.ok) {
-          const userData = await res.json();
-          setUser(userData);
-        } else {
-          // Redirecionar para página de login se não estiver autenticado
-          window.location.href = "/auth";
+        // Verificamos se é necessário buscar o usuário
+        if (isMounted && isLoading) {
+          console.log("Buscando dados do usuário...");
+          const res = await apiRequest("GET", "/api/user");
+          
+          if (res.ok && isMounted) {
+            const userData = await res.json();
+            setUser(userData);
+          } else if (isMounted) {
+            // Redirecionar para página de login se não estiver autenticado
+            window.location.href = "/auth";
+          }
         }
       } catch (error) {
-        toast({
-          title: "Erro",
-          description: "Falha ao carregar dados do usuário",
-          variant: "destructive",
-        });
-        console.error("Erro ao buscar usuário:", error);
+        if (isMounted) {
+          console.error("Erro ao buscar usuário:", error);
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     }
 
     fetchUser();
+    
+    // Função de limpeza para evitar atualizações em componentes desmontados
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Ajuste para fechamento automático do sidebar em mobile ao navegar

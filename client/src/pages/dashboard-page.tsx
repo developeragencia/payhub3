@@ -178,52 +178,74 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+    
     async function fetchData() {
       try {
-        setLoading(true);
-        
-        // Buscar atividades
-        const atividadesRes = await apiRequest("GET", "/api/atividades");
-        
-        if (!atividadesRes.ok) {
-          throw new Error("Falha ao carregar atividades");
+        if (isMounted) {
+          setLoading(true);
+          
+          console.log("Carregando dados do dashboard...");
+          
+          // Buscar atividades
+          const atividadesRes = await apiRequest("GET", "/api/atividades");
+          
+          if (!atividadesRes.ok) {
+            throw new Error("Falha ao carregar atividades");
+          }
+          
+          if (!isMounted) return;
+          
+          const atividadesData = await atividadesRes.json();
+          setAtividades(atividadesData);
+          
+          // Buscar estatísticas 
+          const transacoesRes = await apiRequest("GET", "/api/transacoes");
+          
+          if (!transacoesRes.ok) {
+            throw new Error("Falha ao carregar transações");
+          }
+          
+          if (!isMounted) return;
+          
+          const transacoesData = await transacoesRes.json();
+          
+          // Calcular estatísticas baseado nas transações
+          const total = transacoesData.length;
+          const receitaTotal = transacoesData.reduce(
+            (acc: number, transacao: any) => acc + transacao.valor, 
+            0
+          );
+          
+          if (isMounted) {
+            setStats({
+              totalTransacoes: total,
+              receitaTotal: receitaTotal,
+              mediaMensal: receitaTotal > 0 ? receitaTotal / 3 : 0, // Média mensal
+              conversao: 68.5, // Taxa de conversão
+            });
+            
+            // Garantir que o carregamento termina
+            setTimeout(() => {
+              if (isMounted) {
+                setLoading(false);
+              }
+            }, 300);
+          }
         }
-        
-        const atividadesData = await atividadesRes.json();
-        setAtividades(atividadesData);
-        
-        // Buscar estatísticas (simuladas por enquanto)
-        // Em um sistema real, teríamos um endpoint dedicado para estatísticas
-        // ou calcularíamos com base nos dados de transações reais
-        const transacoesRes = await apiRequest("GET", "/api/transacoes");
-        
-        if (!transacoesRes.ok) {
-          throw new Error("Falha ao carregar transações");
-        }
-        
-        const transacoesData = await transacoesRes.json();
-        
-        // Calcular estatísticas baseado nas transações
-        const total = transacoesData.length;
-        const receitaTotal = transacoesData.reduce(
-          (acc: number, transacao: any) => acc + transacao.valor, 
-          0
-        );
-        
-        setStats({
-          totalTransacoes: total,
-          receitaTotal: receitaTotal,
-          mediaMensal: receitaTotal > 0 ? receitaTotal / 3 : 0, // Simulação de média mensal
-          conversao: 68.5, // Valor simulado para exemplo
-        });
       } catch (error) {
         console.error("Erro ao carregar dados do dashboard:", error);
-      } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
 
     fetchData();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (

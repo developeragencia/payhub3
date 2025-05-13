@@ -59,8 +59,7 @@ export default function MercadoPagoCheckoutPage() {
 
   return (
     <MainLayout 
-      title="Checkout com MercadoPago" 
-      description="Realize pagamentos usando MercadoPago"
+      pageTitle="Checkout com MercadoPago" 
     >
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="w-full md:w-auto mb-6">
