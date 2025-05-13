@@ -698,8 +698,14 @@ export default function OperacoesPage() {
                 <div className="text-sm font-medium mb-1">Dados</div>
                 <div className="p-2 bg-muted rounded-md overflow-auto max-h-60">
                   <pre className="text-xs whitespace-pre-wrap">
-                    {/* Convertendo dados para string de forma segura */}
-                    {JSON.stringify(selectedWebhook.dados, null, 2)}
+                    {/* Renderizando o conteúdo de forma segura */}
+                    {(() => {
+                      try {
+                        return JSON.stringify(selectedWebhook.dados, null, 2);
+                      } catch (e) {
+                        return "Erro ao processar dados";
+                      }
+                    })()}
                   </pre>
                 </div>
               </div>
