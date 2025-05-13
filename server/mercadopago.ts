@@ -1,6 +1,8 @@
 import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
+import { MercadoPagoPayment, MercadoPagoPreference, WebhookResponseType } from './types/mercadopago';
 
-// Configuração do cliente com a chave privada
+// Configuração do cliente com a chave privada 
+// Nota: Em ambiente de produção, sempre use uma variável de ambiente para a chave
 const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN || 'TEST-1012316033860073-021220-e1dafb22aef47bbe9e1e4611973a955c-554634053';
 const client = new MercadoPagoConfig({ accessToken });
 
@@ -64,7 +66,7 @@ export async function createPreference(
     pending: string;
   },
   notificationUrl?: string
-) {
+): Promise<MercadoPagoPreference> {
   try {
     const preferenceData: any = {
       items,
@@ -77,7 +79,7 @@ export async function createPreference(
     }
 
     const response = await preference.create({ body: preferenceData });
-    return response;
+    return response as unknown as MercadoPagoPreference;
   } catch (error) {
     console.error('Erro ao criar preferência:', error);
     throw error;
@@ -91,13 +93,13 @@ export async function createPreference(
  * @param id ID do recurso
  * @returns Dados processados
  */
-export async function processWebhook(topic: string, id: string) {
+export async function processWebhook(topic: string, id: string): Promise<WebhookResponseType> {
   try {
     switch (topic) {
       case 'payment':
         const paymentData = await getPayment(id);
-        // Aqui pode adicionar lógica para atualizar o status da transação no banco de dados
-        return paymentData;
+        // Cast para o tipo correto
+        return paymentData as MercadoPagoPayment;
         
       case 'merchant_order':
         // Implementação para ordens de merchant

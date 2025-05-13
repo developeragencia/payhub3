@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import { storage } from '../database-storage';
+import { storage } from '../storage';
 import { createPreference, processWebhook } from '../mercadopago';
-import { insertTransacaoSchema } from '@shared/schema';
+import { insertTransacaoSchema, type InsertAtividade, type InsertWebhook } from '@shared/schema';
+import { MercadoPagoPayment } from '../types/mercadopago';
 
 const router = Router();
 
@@ -35,23 +36,26 @@ router.post('/mercadopago/webhook', async (req, res) => {
     
     // Se for uma notificação de pagamento, registrar transação
     if (topic === 'payment') {
-      const payment = result;
+      // Cast para o tipo correto
+      const payment = result as MercadoPagoPayment;
       
       // Buscar checkout pela referência externa (se existir)
       const checkoutId = payment.external_reference 
-        ? parseInt(payment.external_reference, 10) 
+        ? parseInt(String(payment.external_reference), 10) 
         : 1; // valor padrão caso não exista
       
       // Criar transação
       const transacaoData = {
         checkoutId,
-        clienteNome: payment.payer?.first_name + ' ' + payment.payer?.last_name || 'Cliente',
+        clienteNome: payment.payer?.first_name && payment.payer?.last_name 
+          ? `${payment.payer.first_name} ${payment.payer.last_name}` 
+          : 'Cliente',
         clienteEmail: payment.payer?.email || 'email@exemplo.com',
         valor: payment.transaction_amount || 0,
         moeda: payment.currency_id || 'BRL',
         status: payment.status || 'pending',
         metodo: payment.payment_method_id || 'mercadopago',
-        referencia: payment.id.toString(),
+        referencia: String(payment.id),
         metadata: JSON.stringify(payment),
         dataCriacao: new Date(),
       };
@@ -61,27 +65,30 @@ router.post('/mercadopago/webhook', async (req, res) => {
       await storage.createTransacao(validatedData);
       
       // Registrar atividade
-      await storage.createAtividade({
+      const atividadeData: InsertAtividade = {
         tipo: 'pagamento',
-        descricao: `Pagamento ${payment.status} de R$ ${payment.transaction_amount}`,
+        descricao: `Pagamento ${payment.status} de R$ ${payment.transaction_amount || 0}`,
         metadados: JSON.stringify({
           valor: payment.transaction_amount,
           status: payment.status,
           id: payment.id,
         }),
         dataCriacao: new Date(),
-      });
+      };
+      
+      await storage.createAtividade(atividadeData);
     }
     
     // Registrar webhook
-    await storage.createWebhook({
+    const webhookData: InsertWebhook = {
       evento: String(topic),
       url: req.originalUrl,
       ativo: true,
-      ultimoStatus: 200,
       ultimaExecucao: new Date(),
       dados: JSON.stringify(result),
-    });
+    };
+    
+    await storage.createWebhook(webhookData);
     
     res.status(200).json({ success: true, data: result });
   } catch (error: any) {
@@ -89,14 +96,15 @@ router.post('/mercadopago/webhook', async (req, res) => {
     
     // Registrar webhook com erro
     try {
-      await storage.createWebhook({
+      const webhookErroData: InsertWebhook = {
         evento: String(req.query.topic || 'unknown'),
         url: req.originalUrl,
         ativo: true,
-        ultimoStatus: 500,
         ultimaExecucao: new Date(),
         dados: JSON.stringify({ error: error.message }),
-      });
+      };
+      
+      await storage.createWebhook(webhookErroData);
     } catch (webhookError) {
       console.error('Erro ao registrar webhook com falha:', webhookError);
     }
