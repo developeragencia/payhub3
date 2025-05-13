@@ -123,6 +123,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 import DashboardPadraoPage from "@/pages/dashboard-padrao-page";
 import CheckoutLinkPage from "@/pages/checkout-link-page";
 import ListaLayoutPage from "@/pages/lista-layout-page";
+import ClientesPage from "@/pages/clientes-page";
 import PerfilPage from "@/pages/perfil-page";
 
 function Router() {
@@ -166,6 +167,11 @@ function Router() {
       <Route path="/transacoes">
         <PrivateRoute>
           <MercadoPagoCheckoutPage />
+        </PrivateRoute>
+      </Route>
+      <Route path="/clientes">
+        <PrivateRoute>
+          <ClientesPage />
         </PrivateRoute>
       </Route>
       <Route path="/perfil">
