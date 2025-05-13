@@ -7,6 +7,9 @@ import DashboardPage from "@/pages/dashboard-page";
 import ProdutosPage from "@/pages/produtos-page";
 import CheckoutPage from "@/pages/checkout-page";
 import OperacoesPage from "@/pages/operacoes-page";
+import MercadoPagoCheckoutPage from "@/pages/mercadopago-checkout";
+import PagamentoPage from "@/pages/pagamento-page";
+import TransacaoStatusPage from "@/pages/transacao-status-page";
 import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { apiRequest } from "./lib/queryClient";
@@ -86,6 +89,15 @@ function Router() {
           <OperacoesPage />
         </PrivateRoute>
       </Route>
+      <Route path="/mercadopago-checkout">
+        <PrivateRoute>
+          <MercadoPagoCheckoutPage />
+        </PrivateRoute>
+      </Route>
+      <Route path="/pagamento" component={PagamentoPage} />
+      <Route path="/transacao/sucesso" component={TransacaoStatusPage} />
+      <Route path="/transacao/falha" component={TransacaoStatusPage} />
+      <Route path="/transacao/pendente" component={TransacaoStatusPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
