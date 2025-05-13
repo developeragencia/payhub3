@@ -75,9 +75,9 @@ router.post("/", isAuthenticated, async (req, res) => {
       tipo: "cliente_criado",
       descricao: `Cliente ${novoCliente.nome} criado`,
       data: new Date(),
-      usuarioId: req.user?.id,
-      entidadeId: novoCliente.id,
-      entidadeTipo: "cliente",
+      icone: "user-add-line",
+      cor: "success",
+      userId: req.user?.id
     });
     
     res.status(201).json(novoCliente);
@@ -131,9 +131,9 @@ router.put("/:id", isAuthenticated, async (req, res) => {
       tipo: "cliente_atualizado",
       descricao: `Cliente ${clienteAtualizado?.nome} atualizado`,
       data: new Date(),
-      usuarioId: req.user?.id,
-      entidadeId: id,
-      entidadeTipo: "cliente",
+      icone: "user-edit-line",
+      cor: "primary",
+      userId: req.user?.id
     });
     
     res.json(clienteAtualizado);
@@ -169,9 +169,9 @@ router.delete("/:id", isAuthenticated, async (req, res) => {
         tipo: "cliente_excluido",
         descricao: `Cliente ${clienteExistente.nome} excluído`,
         data: new Date(),
-        usuarioId: req.user?.id,
-        entidadeId: id,
-        entidadeTipo: "cliente",
+        icone: "delete-bin-line",
+        cor: "danger",
+        userId: req.user?.id
       });
       
       return res.status(200).json({ message: "Cliente excluído com sucesso" });
