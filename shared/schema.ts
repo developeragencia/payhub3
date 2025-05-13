@@ -164,3 +164,37 @@ export type UpdateWebhook = z.infer<typeof updateWebhookSchema>;
 
 export type Atividade = typeof atividades.$inferSelect;
 export type InsertAtividade = z.infer<typeof insertAtividadeSchema>;
+
+// Esquema de Clientes
+export const clientes = pgTable("clientes", {
+  id: serial("id").primaryKey(),
+  nome: text("nome").notNull(),
+  email: text("email").notNull().unique(),
+  cpfCnpj: text("cpf_cnpj").notNull().unique(),
+  telefone: text("telefone"),
+  endereco: text("endereco"),
+  cidade: text("cidade"),
+  estado: text("estado"),
+  cep: text("cep"),
+  observacoes: text("observacoes"),
+  ativo: boolean("ativo").default(true).notNull(),
+  dataCriacao: timestamp("data_criacao").defaultNow().notNull(),
+  usuarioId: integer("usuario_id").references(() => users.id),
+});
+
+export const insertClienteSchema = createInsertSchema(clientes).pick({
+  nome: true,
+  email: true,
+  cpfCnpj: true,
+  telefone: true,
+  endereco: true,
+  cidade: true,
+  estado: true,
+  cep: true,
+  observacoes: true,
+  ativo: true,
+  usuarioId: true,
+});
+
+export type Cliente = typeof clientes.$inferSelect;
+export type InsertCliente = z.infer<typeof insertClienteSchema>;

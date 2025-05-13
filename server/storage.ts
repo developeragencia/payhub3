@@ -4,7 +4,8 @@ import {
   type Checkout, type InsertCheckout,
   type Transacao, type InsertTransacao,
   type Webhook, type InsertWebhook, type UpdateWebhook,
-  type Atividade, type InsertAtividade
+  type Atividade, type InsertAtividade,
+  type Cliente, type InsertCliente
 } from "@shared/schema";
 import session from "express-session";
 
@@ -47,6 +48,15 @@ export interface IStorage {
   getAtividade(id: number): Promise<Atividade | undefined>;
   getAtividades(): Promise<Atividade[]>;
   createAtividade(atividade: InsertAtividade): Promise<Atividade>;
+  
+  // Clientes
+  getCliente(id: number): Promise<Cliente | undefined>;
+  getClienteByCpfCnpj(cpfCnpj: string): Promise<Cliente | undefined>;
+  getClienteByEmail(email: string): Promise<Cliente | undefined>;
+  getClientes(usuarioId?: number): Promise<Cliente[]>;
+  createCliente(cliente: InsertCliente): Promise<Cliente>;
+  updateCliente(id: number, cliente: Partial<InsertCliente>): Promise<Cliente | undefined>;
+  deleteCliente(id: number): Promise<boolean>;
   
   // Store de sessão para autenticação
   sessionStore: session.Store;

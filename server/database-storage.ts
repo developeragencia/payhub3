@@ -4,7 +4,8 @@ import {
   checkouts, type Checkout, type InsertCheckout,
   transacoes, type Transacao, type InsertTransacao,
   webhooks, type Webhook, type InsertWebhook, updateWebhookSchema, type UpdateWebhook,
-  atividades, type Atividade, type InsertAtividade
+  atividades, type Atividade, type InsertAtividade,
+  clientes, type Cliente, type InsertCliente
 } from "@shared/schema";
 import { z } from "zod";
 import session from "express-session";
@@ -177,5 +178,75 @@ export class DatabaseStorage implements IStorage {
   async createAtividade(atividade: InsertAtividade): Promise<Atividade> {
     const [newAtividade] = await db.insert(atividades).values(atividade).returning();
     return newAtividade;
+  }
+
+  // Clientes
+  async getCliente(id: number): Promise<Cliente | undefined> {
+    const [cliente] = await db
+      .select()
+      .from(clientes)
+      .where(eq(clientes.id, id));
+    
+    return cliente;
+  }
+
+  async getClienteByCpfCnpj(cpfCnpj: string): Promise<Cliente | undefined> {
+    const [cliente] = await db
+      .select()
+      .from(clientes)
+      .where(eq(clientes.cpfCnpj, cpfCnpj));
+    
+    return cliente;
+  }
+
+  async getClienteByEmail(email: string): Promise<Cliente | undefined> {
+    const [cliente] = await db
+      .select()
+      .from(clientes)
+      .where(eq(clientes.email, email));
+    
+    return cliente;
+  }
+
+  async getClientes(usuarioId?: number): Promise<Cliente[]> {
+    if (usuarioId) {
+      return await db
+        .select()
+        .from(clientes)
+        .where(eq(clientes.usuarioId, usuarioId))
+        .orderBy(desc(clientes.dataCriacao));
+    }
+    
+    return await db
+      .select()
+      .from(clientes)
+      .orderBy(desc(clientes.dataCriacao));
+  }
+
+  async createCliente(cliente: InsertCliente): Promise<Cliente> {
+    const [novoCliente] = await db
+      .insert(clientes)
+      .values(cliente)
+      .returning();
+    
+    return novoCliente;
+  }
+
+  async updateCliente(id: number, clienteData: Partial<InsertCliente>): Promise<Cliente | undefined> {
+    const [clienteAtualizado] = await db
+      .update(clientes)
+      .set(clienteData)
+      .where(eq(clientes.id, id))
+      .returning();
+    
+    return clienteAtualizado;
+  }
+
+  async deleteCliente(id: number): Promise<boolean> {
+    const result = await db
+      .delete(clientes)
+      .where(eq(clientes.id, id));
+    
+    return result.rowCount !== null && result.rowCount > 0;
   }
 }
