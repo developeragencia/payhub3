@@ -3,9 +3,10 @@ import {
   produtos, type Produto, type InsertProduto,
   checkouts, type Checkout, type InsertCheckout,
   transacoes, type Transacao, type InsertTransacao,
-  webhooks, type Webhook, type InsertWebhook, type updateWebhookSchema,
+  webhooks, type Webhook, type InsertWebhook, updateWebhookSchema, type UpdateWebhook,
   atividades, type Atividade, type InsertAtividade
 } from "@shared/schema";
+import { z } from "zod";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 
@@ -41,7 +42,7 @@ export interface IStorage {
   getWebhook(id: number): Promise<Webhook | undefined>;
   getWebhooks(): Promise<Webhook[]>;
   createWebhook(webhook: InsertWebhook): Promise<Webhook>;
-  updateWebhook(id: number, webhook: Partial<InsertWebhook>): Promise<Webhook | undefined>;
+  updateWebhook(id: number, webhook: UpdateWebhook): Promise<Webhook | undefined>;
   deleteWebhook(id: number): Promise<boolean>;
   
   // Atividades
@@ -214,11 +215,11 @@ export class MemStorage implements IStorage {
     return webhook;
   }
   
-  async updateWebhook(id: number, updateWebhook: Partial<InsertWebhook>): Promise<Webhook | undefined> {
+  async updateWebhook(id: number, updateData: UpdateWebhook): Promise<Webhook | undefined> {
     const webhook = this.webhooks.get(id);
     if (!webhook) return undefined;
     
-    const updatedWebhook = { ...webhook, ...updateWebhook };
+    const updatedWebhook = { ...webhook, ...updateData };
     this.webhooks.set(id, updatedWebhook);
     return updatedWebhook;
   }

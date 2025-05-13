@@ -106,14 +106,16 @@ export const insertWebhookSchema = createInsertSchema(webhooks).pick({
   ativo: true,
 });
 
-// Schema para update de webhook - inclui campos especiais
-export const updateWebhookSchema = createInsertSchema(webhooks).pick({
-  url: true,
-  evento: true,
-  ativo: true,
-  ultimoStatus: true,
-  ultimaExecucao: true,
-});
+// Schema para update de webhook - todos os campos são opcionais
+export const updateWebhookSchema = createInsertSchema(webhooks)
+  .pick({
+    url: true,
+    evento: true,
+    ativo: true,
+    ultimoStatus: true,
+    ultimaExecucao: true,
+  })
+  .partial(); // Torna todos os campos opcionais
 
 // Atividades
 export const atividades = pgTable("atividades", {
@@ -149,6 +151,7 @@ export type InsertTransacao = z.infer<typeof insertTransacaoSchema>;
 
 export type Webhook = typeof webhooks.$inferSelect;
 export type InsertWebhook = z.infer<typeof insertWebhookSchema>;
+export type UpdateWebhook = z.infer<typeof updateWebhookSchema>;
 
 export type Atividade = typeof atividades.$inferSelect;
 export type InsertAtividade = z.infer<typeof insertAtividadeSchema>;
