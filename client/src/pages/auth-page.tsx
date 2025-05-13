@@ -157,25 +157,29 @@ export default function AuthPage() {
   }
   
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/50 flex items-center justify-center p-4">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl w-full">
         <div className="flex items-center justify-center lg:justify-end">
-          <div className="w-full max-w-md">
+          <div className="w-full max-w-md animate-fade-in">
             <Tabs 
               defaultValue="login" 
               value={activeTab}
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-2 mb-4">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Cadastro</TabsTrigger>
+              <TabsList className="grid grid-cols-2 mb-6 bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/20 dark:to-secondary/20 p-1">
+                <TabsTrigger value="login" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white transition-all duration-300">
+                  Login
+                </TabsTrigger>
+                <TabsTrigger value="register" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-accent data-[state=active]:text-white transition-all duration-300">
+                  Cadastro
+                </TabsTrigger>
               </TabsList>
               
-              <TabsContent value="login">
-                <Card>
+              <TabsContent value="login" className="animate-slide-up">
+                <Card className="hover-shadow border border-primary/10">
                   <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-bold">Entre na sua conta</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-gradient">Entre na sua conta</CardTitle>
                     <CardDescription>
                       Informe seu nome de usuário e senha para acessar o painel
                     </CardDescription>
@@ -213,7 +217,7 @@ export default function AuthPage() {
                         
                         <Button 
                           type="submit" 
-                          className="w-full" 
+                          className="w-full gradient-primary hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg" 
                           disabled={isPending}
                         >
                           {isPending ? (
@@ -228,14 +232,25 @@ export default function AuthPage() {
                       </form>
                     </Form>
                     
-                    <div className="mt-4 text-center">
-                      <p className="text-sm text-neutral-600">
+                    <div className="mt-6 text-center">
+                      <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                          <div className="w-full border-t border-muted"></div>
+                        </div>
+                        <div className="relative flex justify-center">
+                          <div className="bg-background px-2 text-xs text-muted-foreground">
+                            OU
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <p className="mt-4 text-sm text-muted-foreground">
                         Não tem uma conta?{" "}
                         <button 
                           onClick={() => setActiveTab("register")}
-                          className="text-primary hover:underline font-medium"
+                          className="text-gradient-accent font-semibold hover:opacity-80 transition-opacity"
                         >
-                          Cadastre-se
+                          Cadastre-se agora
                         </button>
                       </p>
                     </div>
@@ -243,10 +258,12 @@ export default function AuthPage() {
                 </Card>
               </TabsContent>
               
-              <TabsContent value="register">
-                <Card>
+              <TabsContent value="register" className="animate-slide-up">
+                <Card className="hover-shadow border border-secondary/10">
                   <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-bold">Crie sua conta</CardTitle>
+                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
+                      Crie sua conta
+                    </CardTitle>
                     <CardDescription>
                       Preencha os campos abaixo para criar uma nova conta
                     </CardDescription>
