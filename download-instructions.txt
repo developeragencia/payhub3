@@ -1,0 +1,22 @@
+Instruções para Download do Projeto PAYHUB/ALEXDEVELOPER
+
+O arquivo payhub-alexdeveloper.tar.gz está pronto para download. 
+Este arquivo contém todos os arquivos necessários para deploy no Netlify.
+
+Como Usar:
+
+1. Baixe o arquivo payhub-alexdeveloper.tar.gz
+2. Descompacte com um programa como 7-Zip, WinRAR ou o comando tar:
+   tar -xzf payhub-alexdeveloper.tar.gz
+3. Siga as instruções no arquivo INSTRUCOES-DEPLOY.md
+
+Conteúdo do pacote:
+- Código fonte completo (client, server, shared)
+- Configurações do Netlify
+- Scripts de build e deploy
+- Arquivos de função serverless
+- Documentação detalhada
+
+Credenciais do sistema:
+- Usuário: admin
+- Senha: admin123
