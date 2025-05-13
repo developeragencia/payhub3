@@ -21,22 +21,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import { Transacao, Webhook, insertWebhookSchema } from "@shared/schema";
-import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Badge } from "@/components/ui/badge";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Transacao,
+  Webhook,
+  insertWebhookSchema,
+  InsertWebhook,
+  updateWebhookSchema
+} from "@shared/schema";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { 
@@ -59,6 +55,9 @@ import {
   Copy
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 
 // Definir o schema para criar/editar webhook
 const formSchema = insertWebhookSchema;
@@ -70,18 +69,20 @@ export default function OperacoesPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isViewTransacaoDialogOpen, setIsViewTransacaoDialogOpen] = useState(false);
-  const [isViewWebhookDialogOpen, setIsViewWebhookDialogOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [selectedWebhook, setSelectedWebhook] = useState<Webhook | null>(null);
-  const [selectedTransacao, setSelectedTransacao] = useState<Transacao | null>(null);
   const { toast } = useToast();
   
+  // Buscar todas as transações
   const { data: transacoes = [], isLoading: isLoadingTransacoes } = useQuery<Transacao[]>({
     queryKey: ["/api/transacoes"],
+    refetchInterval: false,
   });
-
+  
+  // Buscar todos os webhooks
   const { data: webhooks = [], isLoading: isLoadingWebhooks } = useQuery<Webhook[]>({
     queryKey: ["/api/webhooks"],
+    refetchInterval: false,
   });
 
   const filteredTransacoes = searchTransacao
@@ -107,20 +108,10 @@ export default function OperacoesPage() {
     defaultValues: {
       evento: "",
       url: "",
-      ativo: true
+      ativo: true,
     },
   });
-
-  // Form para editar webhook
-  const editForm = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      evento: "",
-      url: "",
-      ativo: true
-    },
-  });
-
+  
   // Mutation para criar webhook
   const createWebhookMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
@@ -148,12 +139,13 @@ export default function OperacoesPage() {
   // Mutation para editar webhook
   const updateWebhookMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: z.infer<typeof formSchema> }) => {
-      const res = await apiRequest("PUT", `/api/webhooks/${id}`, data);
+      const res = await apiRequest("PATCH", `/api/webhooks/${id}`, data);
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/webhooks"] });
       setIsEditDialogOpen(false);
+      form.reset();
       setSelectedWebhook(null);
       toast({
         title: "Webhook atualizado",
@@ -192,7 +184,7 @@ export default function OperacoesPage() {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onCreateSubmit = (data: z.infer<typeof formSchema>) => {
     createWebhookMutation.mutate(data);
   };
 
@@ -202,51 +194,33 @@ export default function OperacoesPage() {
     }
   };
 
-  const handleEditWebhook = (webhook: Webhook) => {
-    setSelectedWebhook(webhook);
-    editForm.reset({
-      evento: webhook.evento,
-      url: webhook.url,
-      ativo: webhook.ativo
-    });
-    setIsEditDialogOpen(true);
-  };
-
-  const handleDeleteWebhook = (webhook: Webhook) => {
-    setSelectedWebhook(webhook);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = () => {
+  const onDeleteConfirm = () => {
     if (selectedWebhook) {
       deleteWebhookMutation.mutate(selectedWebhook.id);
     }
   };
 
-  const handleViewTransacao = (transacao: Transacao) => {
-    setSelectedTransacao(transacao);
-    setIsViewTransacaoDialogOpen(true);
-  };
-  
-  const handleViewWebhook = (webhook: Webhook) => {
+  const handleEdit = (webhook: Webhook) => {
     setSelectedWebhook(webhook);
-    setIsViewWebhookDialogOpen(true);
+    form.reset({
+      evento: webhook.evento,
+      url: webhook.url,
+      ativo: webhook.ativo,
+    });
+    setIsEditDialogOpen(true);
   };
 
-  // Formatação de data
-  const formatDate = (dateString: string | Date) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
+  const handleDelete = (webhook: Webhook) => {
+    setSelectedWebhook(webhook);
+    setIsDeleteDialogOpen(true);
   };
 
-  // Obter classe de estilo de status para transações
-  const getStatusClass = (status: string) => {
+  const handleView = (webhook: Webhook) => {
+    setSelectedWebhook(webhook);
+    setIsViewDialogOpen(true);
+  };
+
+  const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'concluído':
       case 'concluido':
@@ -268,8 +242,8 @@ export default function OperacoesPage() {
   return (
     <MainLayout pageTitle="Operações">
       <Card className="mb-6">
-        <CardHeader className="pb-3">
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <TabsList>
                 <TabsTrigger value="transacoes" className="flex items-center gap-2">
@@ -288,362 +262,258 @@ export default function OperacoesPage() {
                 </Button>
               )}
             </div>
-          </Tabs>
-        </CardHeader>
-        <CardContent>
-          <TabsContent value="transacoes" className="mt-0">
-            <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0 mb-4">
-              <div className="relative rounded-md w-full sm:w-64">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="text-neutral-400 h-4 w-4" />
+          </CardHeader>
+          
+          <CardContent>
+            <TabsContent value="transacoes" className="mt-0">
+              <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0 mb-4">
+                <div className="relative rounded-md w-full sm:w-64">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="text-neutral-400 h-4 w-4" />
+                  </div>
+                  <Input
+                    type="text"
+                    placeholder="Buscar transações"
+                    className="pl-10"
+                    value={searchTransacao}
+                    onChange={(e) => setSearchTransacao(e.target.value)}
+                  />
                 </div>
-                <Input
-                  type="text"
-                  placeholder="Buscar transações"
-                  className="pl-10"
-                  value={searchTransacao}
-                  onChange={(e) => setSearchTransacao(e.target.value)}
-                />
+                <div className="flex items-center space-x-2">
+                  <Button variant="outline" size="sm" className="flex items-center">
+                    <Filter className="mr-1 h-4 w-4" /> Filtros
+                  </Button>
+                  <Button variant="outline" size="sm" className="flex items-center">
+                    <Download className="mr-1 h-4 w-4" /> Exportar
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm" className="flex items-center">
-                  <Filter className="mr-1 h-4 w-4" /> Filtros
-                </Button>
-                <Button variant="outline" size="sm" className="flex items-center">
-                  <Download className="mr-1 h-4 w-4" /> Exportar
-                </Button>
-              </div>
-            </div>
 
-            {isLoadingTransacoes ? (
-              <div className="flex justify-center items-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
-            ) : (
-              <div className="rounded-md border overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12">ID</TableHead>
-                      <TableHead>Cliente</TableHead>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Valor</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Método</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredTransacoes.length === 0 ? (
+              {isLoadingTransacoes ? (
+                <div className="flex justify-center items-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : filteredTransacoes.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">Nenhuma transação encontrada</p>
+                </div>
+              ) : (
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
                       <TableRow>
-                        <TableCell colSpan={7} className="h-24 text-center">
-                          Nenhuma transação encontrada.
-                        </TableCell>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Data</TableHead>
+                        <TableHead>Cliente</TableHead>
+                        <TableHead>Valor</TableHead>
+                        <TableHead>Método</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Referência</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
                       </TableRow>
-                    ) : (
-                      filteredTransacoes.map((transacao) => (
-                        <TableRow key={transacao.id} className="hover:bg-neutral-50">
-                          <TableCell className="font-medium">
-                            #{transacao.referencia}
-                          </TableCell>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredTransacoes.map((transacao) => (
+                        <TableRow key={transacao.id}>
+                          <TableCell className="font-medium">{transacao.id}</TableCell>
+                          <TableCell>{formatDate(transacao.data)}</TableCell>
                           <TableCell>
-                            <div className="flex items-center">
-                              <Avatar className="h-7 w-7 mr-2">
-                                <AvatarFallback>{transacao.clienteNome.charAt(0).toUpperCase()}</AvatarFallback>
+                            <div className="flex items-center gap-2">
+                              <Avatar className="h-6 w-6">
+                                <AvatarFallback className="text-xs">
+                                  {transacao.clienteNome.charAt(0).toUpperCase()}
+                                </AvatarFallback>
                               </Avatar>
-                              <div>
-                                <div>{transacao.clienteNome}</div>
-                                <div className="text-xs text-neutral-500">{transacao.clienteEmail}</div>
+                              <div className="flex flex-col">
+                                <span className="text-sm">{transacao.clienteNome}</span>
+                                <span className="text-xs text-muted-foreground">{transacao.clienteEmail}</span>
                               </div>
                             </div>
                           </TableCell>
+                          <TableCell>{formatCurrency(transacao.valor)}</TableCell>
                           <TableCell>
-                            {formatDate(transacao.data)}
-                          </TableCell>
-                          <TableCell className="font-medium">
-                            {new Intl.NumberFormat('pt-BR', {
-                              style: 'currency',
-                              currency: 'BRL'
-                            }).format(transacao.valor)}
+                            <div className="flex items-center gap-2">
+                              <CreditCard className="h-4 w-4 text-muted-foreground" />
+                              <span>{transacao.metodo}</span>
+                            </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant="outline" className={getStatusClass(transacao.status)}>
+                            <Badge 
+                              variant="outline" 
+                              className={getStatusColor(transacao.status)}
+                            >
                               {transacao.status}
                             </Badge>
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center">
-                              <CreditCard className="mr-1.5 h-4 w-4 text-neutral-500" />
-                              {transacao.metodo}
+                              <span className="text-xs font-mono">{transacao.referencia.substring(0, 12)}...</span>
                             </div>
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-8 w-8"
-                              onClick={() => handleViewTransacao(transacao)}
-                            >
+                            <Button variant="ghost" size="icon">
                               <Eye className="h-4 w-4" />
                             </Button>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleViewTransacao(transacao)}>
-                                  <Eye className="h-4 w-4 mr-2" />
-                                  Ver detalhes
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <Download className="h-4 w-4 mr-2" />
-                                  Baixar recibo
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <AlertCircle className="h-4 w-4 mr-2" />
-                                  Reportar problema
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-
-            <div className="flex items-center justify-between pt-4 border-t border-neutral-200 mt-4">
-              <div className="text-sm text-neutral-700">
-                Mostrando <span className="font-medium">1</span> de <span className="font-medium">{filteredTransacoes.length}</span> transações
-              </div>
-              <div className="flex space-x-1">
-                <Button variant="outline" size="sm" disabled>
-                  Anterior
-                </Button>
-                <Button variant="default" size="sm">1</Button>
-                <Button variant="outline" size="sm">2</Button>
-                <Button variant="outline" size="sm">3</Button>
-                <Button variant="outline" size="sm">4</Button>
-                <Button variant="outline" size="sm">
-                  Próximo
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="webhooks" className="mt-0">
-            <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0 mb-4">
-              <div className="relative rounded-md w-full sm:w-64">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="text-neutral-400 h-4 w-4" />
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
-                <Input
-                  type="text"
-                  placeholder="Buscar webhooks"
-                  className="pl-10"
-                  value={searchWebhook}
-                  onChange={(e) => setSearchWebhook(e.target.value)}
-                />
-              </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex items-center"
-                onClick={() => setIsCreateDialogOpen(true)}
-              >
-                <Plus className="mr-1 h-4 w-4" /> Adicionar Webhook
-              </Button>
-            </div>
+              )}
+            </TabsContent>
 
-            {isLoadingWebhooks ? (
-              <div className="flex justify-center items-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <TabsContent value="webhooks" className="mt-0">
+              <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0 mb-4">
+                <div className="relative rounded-md w-full sm:w-64">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="text-neutral-400 h-4 w-4" />
+                  </div>
+                  <Input
+                    type="text"
+                    placeholder="Buscar webhooks"
+                    className="pl-10"
+                    value={searchWebhook}
+                    onChange={(e) => setSearchWebhook(e.target.value)}
+                  />
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center"
+                  onClick={() => setIsCreateDialogOpen(true)}
+                >
+                  <Plus className="mr-1 h-4 w-4" /> Adicionar Webhook
+                </Button>
               </div>
-            ) : (
-              <div className="rounded-md border overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12">ID</TableHead>
-                      <TableHead>Evento</TableHead>
-                      <TableHead>URL</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Última Execução</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredWebhooks.length === 0 ? (
+
+              {isLoadingWebhooks ? (
+                <div className="flex justify-center items-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : filteredWebhooks.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">Nenhum webhook encontrado</p>
+                </div>
+              ) : (
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
                       <TableRow>
-                        <TableCell colSpan={6} className="h-24 text-center">
-                          Nenhum webhook encontrado.
-                        </TableCell>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Evento</TableHead>
+                        <TableHead>URL</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Última Execução</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
                       </TableRow>
-                    ) : (
-                      filteredWebhooks.map((webhook) => (
-                        <TableRow key={webhook.id} className="hover:bg-neutral-50">
-                          <TableCell className="font-medium">
-                            {webhook.id}
-                          </TableCell>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredWebhooks.map((webhook) => (
+                        <TableRow key={webhook.id}>
+                          <TableCell className="font-medium">{webhook.id}</TableCell>
                           <TableCell>
-                            <div className="font-medium">{webhook.evento}</div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center space-x-2 max-w-xs truncate">
-                              <span className="truncate text-xs">{webhook.url}</span>
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                className="h-6 w-6"
-                                asChild
-                              >
-                                <a href={webhook.url} target="_blank" rel="noopener noreferrer">
-                                  <ExternalLink className="h-3 w-3" />
-                                </a>
-                              </Button>
+                            <div className="flex items-center gap-2">
+                              <WebhookIcon className="h-4 w-4 text-primary" />
+                              <span>{webhook.evento}</span>
                             </div>
                           </TableCell>
                           <TableCell>
-                            {webhook.ativo ? (
-                              <Badge variant="outline" className="bg-success bg-opacity-10 text-success">
-                                <Check className="mr-1 h-3 w-3" /> Ativo
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline" className="bg-warning bg-opacity-10 text-warning">
-                                <AlertCircle className="mr-1 h-3 w-3" /> Falha
-                              </Badge>
-                            )}
+                            <div className="flex items-center gap-2">
+                              <Link2 className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-xs font-mono max-w-[200px] truncate">{webhook.url}</span>
+                            </div>
                           </TableCell>
                           <TableCell>
-                            {webhook.ultimaExecucao ? formatDate(webhook.ultimaExecucao) : 
-                              <span className="text-neutral-400">Nunca executado</span>
-                            }
+                            <div className="flex items-center">
+                              {webhook.ativo ? (
+                                <Badge className="bg-success/10 text-success border-success">Ativo</Badge>
+                              ) : (
+                                <Badge variant="outline">Inativo</Badge>
+                              )}
+                            </div>
                           </TableCell>
-                          <TableCell className="text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleViewWebhook(webhook)}>
-                                  <Eye className="h-4 w-4 mr-2" />
-                                  Ver dados
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleEditWebhook(webhook)}>
-                                  <Pencil className="h-4 w-4 mr-2" />
-                                  Editar
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <Link2 className="h-4 w-4 mr-2" />
-                                  Testar conexão
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem 
-                                  onClick={() => handleDeleteWebhook(webhook)}
-                                  className="text-destructive focus:text-destructive"
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Excluir
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                          <TableCell>
+                            {webhook.ultimaExecucao ? formatDateTime(webhook.ultimaExecucao) : "Nunca executado"}
+                          </TableCell>
+                          <TableCell className="text-right space-x-1">
+                            <Button variant="ghost" size="icon" onClick={() => handleView(webhook)}>
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => handleEdit(webhook)}>
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => handleDelete(webhook)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </TabsContent>
-        </CardContent>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </TabsContent>
+          </CardContent>
+        </Tabs>
       </Card>
 
-      {/* Dialog de Criar Webhook */}
+      {/* Formulário para criar webhook */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Adicionar Novo Webhook</DialogTitle>
+            <DialogTitle>Criar Novo Webhook</DialogTitle>
             <DialogDescription>
-              Configure um webhook para receber notificações de eventos do sistema.
+              Adicione um novo webhook para receber notificações de eventos.
             </DialogDescription>
           </DialogHeader>
-          
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onCreateSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="evento"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Evento *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="payment.processed" {...field} />
-                    </FormControl>
+                    <FormLabel>Evento</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um evento" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="payment">Pagamento</SelectItem>
+                        <SelectItem value="refund">Reembolso</SelectItem>
+                        <SelectItem value="subscription">Assinatura</SelectItem>
+                        <SelectItem value="dispute">Disputa</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
               <FormField
                 control={form.control}
                 name="url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>URL do Webhook *</FormLabel>
+                    <FormLabel>URL</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://seusite.com.br/api/webhooks/payment" {...field} />
+                      <Input placeholder="https://exemplo.com/webhook" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
-              <FormField
-                control={form.control}
-                name="ativo"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>Webhook Ativo</FormLabel>
-                      <FormDescription className="text-xs">
-                        Quando ativo, o webhook receberá as notificações dos eventos.
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              
               <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="outline">Cancelar</Button>
-                </DialogClose>
-                <Button 
-                  type="submit" 
-                  disabled={createWebhookMutation.isPending}
-                >
+                <Button type="submit">
                   {createWebhookMutation.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Criando...
                     </>
                   ) : (
-                    <>
-                      <Check className="mr-2 h-4 w-4" />
-                      Adicionar Webhook
-                    </>
+                    <>Criar Webhook</>
                   )}
                 </Button>
               </DialogFooter>
@@ -652,85 +522,91 @@ export default function OperacoesPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog de Editar Webhook */}
+      {/* Formulário para editar webhook */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Editar Webhook</DialogTitle>
             <DialogDescription>
-              Atualize as configurações do webhook.
+              Atualize as informações do webhook.
             </DialogDescription>
           </DialogHeader>
-          
-          <Form {...editForm}>
-            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onEditSubmit)} className="space-y-4">
               <FormField
-                control={editForm.control}
+                control={form.control}
                 name="evento"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Evento *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="payment.processed" {...field} />
-                    </FormControl>
+                    <FormLabel>Evento</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um evento" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="payment">Pagamento</SelectItem>
+                        <SelectItem value="refund">Reembolso</SelectItem>
+                        <SelectItem value="subscription">Assinatura</SelectItem>
+                        <SelectItem value="dispute">Disputa</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
               <FormField
-                control={editForm.control}
+                control={form.control}
                 name="url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>URL do Webhook *</FormLabel>
+                    <FormLabel>URL</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://seusite.com.br/api/webhooks/payment" {...field} />
+                      <Input placeholder="https://exemplo.com/webhook" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
               <FormField
-                control={editForm.control}
+                control={form.control}
                 name="ativo"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                     <div className="space-y-0.5">
-                      <FormLabel>Webhook Ativo</FormLabel>
-                      <FormDescription className="text-xs">
-                        Quando ativo, o webhook receberá as notificações dos eventos.
+                      <FormLabel>Status</FormLabel>
+                      <FormDescription>
+                        Ativar ou desativar este webhook
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <Select
+                        value={field.value ? "true" : "false"}
+                        onValueChange={(value) => field.onChange(value === "true")}
+                      >
+                        <SelectTrigger className="w-[100px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="true">Ativo</SelectItem>
+                          <SelectItem value="false">Inativo</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
-              
               <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="outline">Cancelar</Button>
-                </DialogClose>
-                <Button 
-                  type="submit" 
-                  disabled={updateWebhookMutation.isPending}
-                >
+                <Button type="submit">
                   {updateWebhookMutation.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Salvando...
+                      Atualizando...
                     </>
                   ) : (
-                    <>
-                      <Check className="mr-2 h-4 w-4" />
-                      Salvar Alterações
-                    </>
+                    <>Atualizar</>
                   )}
                 </Button>
               </DialogFooter>
@@ -739,163 +615,69 @@ export default function OperacoesPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog de Excluir Webhook */}
+      {/* Confirmação de exclusão de webhook */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Confirmar exclusão</DialogTitle>
+            <DialogTitle>Excluir Webhook</DialogTitle>
             <DialogDescription>
-              Tem certeza que deseja excluir o webhook para o evento{" "}
-              <span className="font-medium">{selectedWebhook?.evento}</span>?
-              Esta ação não pode ser desfeita.
+              Tem certeza que deseja excluir este webhook? Esta ação não pode ser desfeita.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="outline">
-                Cancelar
-              </Button>
-            </DialogClose>
-            <Button 
-              variant="destructive" 
-              onClick={confirmDelete}
-              disabled={deleteWebhookMutation.isPending}
-            >
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={onDeleteConfirm}>
               {deleteWebhookMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Excluindo...
                 </>
               ) : (
-                <>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Excluir Webhook
-                </>
+                <>Excluir</>
               )}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Dialog de Visualizar Transação */}
-      <Dialog open={isViewTransacaoDialogOpen} onOpenChange={setIsViewTransacaoDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+      {/* Dialog para visualizar webhook */}
+      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Detalhes da Transação</DialogTitle>
+            <DialogTitle>Detalhes do Webhook</DialogTitle>
             <DialogDescription>
-              Informações completas sobre a transação.
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedTransacao && (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="text-lg font-semibold">#{selectedTransacao.referencia}</h3>
-                  <p className="text-sm text-neutral-500">{formatDate(selectedTransacao.data)}</p>
-                </div>
-                <Badge variant="outline" className={getStatusClass(selectedTransacao.status)}>
-                  {selectedTransacao.status}
-                </Badge>
-              </div>
-              
-              <div className="border-t border-b py-3 my-2">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-neutral-500">Valor</p>
-                    <p className="text-base font-medium">
-                      {new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL'
-                      }).format(selectedTransacao.valor)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-neutral-500">Método de Pagamento</p>
-                    <p className="text-base font-medium">{selectedTransacao.metodo}</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-medium mb-2">Cliente</h4>
-                <div className="flex items-center rounded-lg border p-3">
-                  <Avatar className="h-10 w-10 mr-3">
-                    <AvatarFallback>{selectedTransacao.clienteNome.charAt(0).toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">{selectedTransacao.clienteNome}</p>
-                    <p className="text-sm text-neutral-500">{selectedTransacao.clienteEmail}</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-medium mb-2">Checkout ID</h4>
-                <p className="text-sm">#{selectedTransacao.checkoutId}</p>
-              </div>
-              
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsViewTransacaoDialogOpen(false)}>
-                  Fechar
-                </Button>
-                <Button>
-                  <Download className="mr-2 h-4 w-4" />
-                  Baixar Recibo
-                </Button>
-              </DialogFooter>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Modal para visualizar dados do Webhook */}
-      <Dialog open={isViewWebhookDialogOpen} onOpenChange={setIsViewWebhookDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center">
-              <WebhookIcon className="h-5 w-5 mr-2" />
-              Detalhes do Webhook #{selectedWebhook?.id}
-            </DialogTitle>
-            <DialogDescription>
-              Visualize os dados completos do webhook.
+              Informações detalhadas sobre o webhook.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <div className="text-sm font-medium mb-1">Evento</div>
-                <div className="p-2 bg-muted rounded-md">{selectedWebhook?.evento}</div>
-              </div>
-              <div>
-                <div className="text-sm font-medium mb-1">Status</div>
-                <div className="p-2 bg-muted rounded-md">
-                  {selectedWebhook?.ativo ? (
-                    <Badge variant="outline" className="bg-success bg-opacity-10 text-success">
-                      <Check className="mr-1 h-3 w-3" /> Ativo
-                    </Badge>
-                  ) : (
-                    <Badge variant="outline" className="bg-warning bg-opacity-10 text-warning">
-                      <AlertCircle className="mr-1 h-3 w-3" /> Inativo
-                    </Badge>
-                  )}
-                </div>
-              </div>
+            <div>
+              <div className="text-sm font-medium mb-1">ID</div>
+              <div className="p-2 bg-muted rounded-md">{selectedWebhook?.id}</div>
+            </div>
+            
+            <div>
+              <div className="text-sm font-medium mb-1">Evento</div>
+              <div className="p-2 bg-muted rounded-md">{selectedWebhook?.evento}</div>
             </div>
             
             <div>
               <div className="text-sm font-medium mb-1">URL</div>
-              <div className="p-2 bg-muted rounded-md flex justify-between items-center">
-                <code className="text-xs">{selectedWebhook?.url}</code>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-6 w-6 ml-2"
+              <div className="flex justify-between">
+                <div className="p-2 bg-muted rounded-md flex-grow overflow-hidden">
+                  <span className="text-xs font-mono break-all">{selectedWebhook?.url}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="ml-2"
                   onClick={() => {
-                    navigator.clipboard.writeText(selectedWebhook?.url || '');
+                    navigator.clipboard.writeText(selectedWebhook?.url || "");
                     toast({
                       title: "URL copiada",
-                      description: "URL do webhook copiada para a área de transferência",
+                      description: "A URL do webhook foi copiada para a área de transferência.",
+                      duration: 3000,
                     });
                   }}
                 >
@@ -937,7 +719,7 @@ export default function OperacoesPage() {
           <DialogFooter>
             <Button 
               variant="outline"
-              onClick={() => setIsViewWebhookDialogOpen(false)}
+              onClick={() => setIsViewDialogOpen(false)}
             >
               Fechar
             </Button>
@@ -948,13 +730,13 @@ export default function OperacoesPage() {
   );
 }
 
-// Interface for FormDescription that wasn't imported
-interface FormDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
+// TypeScript não estava presente nos imports
+interface FormDescription extends React.HTMLAttributes<HTMLParagraphElement> {}
 
-function FormDescription({ className, ...props }: FormDescriptionProps) {
+function FormDescription({ className, ...props }: FormDescription) {
   return (
     <p
-      className="text-sm text-muted-foreground"
+      className={`text-sm text-muted-foreground ${className}`}
       {...props}
     />
   );
