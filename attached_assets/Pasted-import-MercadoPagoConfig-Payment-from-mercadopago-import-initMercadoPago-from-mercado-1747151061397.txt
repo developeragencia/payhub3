@@ -1,0 +1,92 @@
+import { MercadoPagoConfig, Payment } from 'mercadopago';
+import { initMercadoPago } from '@mercadopago/sdk-react';
+initMercadoPago('TEST-41e30cfc-40c3-437d-a068-ddca10ad5876');
+
+const client = new MercadoPagoConfig({ accessToken: 'TEST-1012316033860073-021220-e1dafb22aef47bbe9e1e4611973a955c-554634053' });
+
+const payment = new Payment(client);
+
+export async function createPayment(data: any) {
+  return payment.create({ body: data })
+	.then(console.log)
+	.catch(console.log);
+} ,
+
+Para esses clientes. Eu tenho aqui também. As informações da E eu consigo clicar aqui em gerenciar. E fazer um E esse login vai direto na página do cliente. Aqui na página do cliente. A gente vai mostrar depois. Então eu vou voltar aqui para a empresa. A gente tem aqui. Webhook. Que nada mais é. Webhook. Para caso queira configurar alguma coisa. Indica e ganha. É um programa que a gente pode colocar. Mais para frente. Não precisa ser agora. Cadê? Deixa eu ver. Lucro por empresa. Também é alguma coisa que a gente pode colocar depois. Que ele basicamente. Vai calcular o quanto cada empresa vendeu. E descontar as taxas. E mostrar o nosso lucro. Em cima de cada empresa. Por exemplo. Aqui a gente tem o total que a gente lucrou. Em cima desse cliente. Em cima desse. Desse. Desse. Desse cliente. Então a gente tem aqui. Faturamento por período. Que seria basicamente a mesma coisa. É um período. A gente coloca aqui em uma semana. E a gente consegue ver. Quanto que cada empresa faturou. E quais são as empresas que mais faturaram. A gente consegue ver. O faturamento pormês E o faturamento por empresa. Que seria basicamente a mesma coisa. Só que não por período. A gente consegue ver. O que as empresas estão faturando. Deixa eu carregar.
+
+
+
+ A gente consegue ver aqui o que cada empresa vendeu no PIX, no cartão, no boleto. A gente tem acesso a chaves e APIs, caso a gente queira mexer em alguma coisa de API aqui, eu posso gerar uma chave aqui no Admin. Eu tenho a parte de antecipação, que nada mais é a pessoa que vendeu no em dois dias ela pode antecipar, certo? Então aqui ela consegue vir antecipar. Aqui tem o valor que ele antecipou, o valor da reserva que está descontando e a taxa da antecipação. E no caso aqui, o valor que o cara vai receber no final. Aí tem os dados do cliente, e no caso, caso essa antecipação estivesse pendente, aparecia um botão aqui de aprovar ou rejeitar. Aqui na White Lab a gente consegue ver as adquirentes cadastradas, a gente consegue alterar as taxas de custo dessas adquirentes.
+
+
+
+ Exemplo, o que essa adquirente me cobra aqui no cartão? R$ 1, 00 mais 2% então eu vou cadastrar isso daqui. Então eu consigo ativar qual que eu quero como padrão, qual que eu quero como padrão de cartão, qual que eu quero como padrão dePIX Eu consigo, dentro daqui também, configurar as chaves de API, mas no caso aqui é uma outra admin, eu consigo colocar aqui as chaves de API de cada adquirente. Aqui eu tenho as configurações do Gatway também, onde eu consigo ver o valor do pre- charge, o início do expediente comercial, o fim do expediente, a empresa admin, enfim, tudo isso daqui eu consigo fazer. Então agora a gente vai para a parte que seria do seller, por dentro da empresa de um Vamos abrir aqui, por exemplo, essa empresa.
+
+
+ A gente tem um dashboard igual do admin. A gente tem o total de vendas, os pedidos pagos, o ticket médio, a gente tem o saldo disponível que ele consegue ver, o saldo dele, a reserva dele e o saldo que ele tem a E dentro disso daqui, no admin, a gente consegue selecionar se a gente quer remover ou adicionar um Exemplo, eu quero tirar R$ 1, 00 milhão desse cliente, o saldo dele vai ficar R$ 998, 000 negativo, entendeu? Então eu consigo fazer isso também. Mesma coisa em transferência, o cara vai vir aqui para pedir saque, ele vem aqui, clica aqui, escolhe a chave que ele quer sair, tirar o saque e ovalor Em bancos, ele vai cadastrar o banco da empresa dele, ele vai cadastrar aqui o banco e a chave PIX.
+
+
+
+ Antecipação, como esse aqui não vai ter, não vai dar para fazer, mas ele consegue vir aqui e antecipar o valor que ele tiver para antecipar. Transação, mesma coisa lá do admin, ele consegue ver aqui as vendas, ele consegue ver os clientes, ele consegue ver o metadata, ele consegue ter todas essas informações aqui. Configurações, ele consegue gerar uma chave de API que vai chegar no e-mail para que ele pegue essa chave de API e vincule no checkout em algum lugar. Aqui tem as informações da empresa dele, que a gente consegue ver o CNPJ, enfim. E aqui a gente consegue ver, por exemplo, quando ele vai cadastrar no Ghetto, a gente consegue ver todas as coisas que ele salvou.
+
+
+ Então a gente consegue ver o contrato social, a self segurando o o documento dele frente, o documento dele verso, o cartão do CNPJ, tudo isso a gente consegue ver. Taxas e pagamentos, onde ele vai ver as taxas que a gente está cobrando dele, que no caso aqui tem a taxa do cartão e a taxa do PIX. E, por fim, os webhooks, que ele também consegue cadastrar webhooks na conta dele. Então aqui o tema do site é, claro, o preto, padrão. Então é basicamente isso aqui dentro de um admin que a gente consegue ver. Eu acho que a maior dúvida seriam essas, né? Tipo assim, basicamente é isso que a gente tem dentro de um painel de um Então isso daqui são as partes que a gente consegue ver por dentro.
+
+
+
+ Então, por exemplo, o cara pediu saque, quem vai pagar o saque somos nós. A gente vai abrir aqui, por exemplo, adquirente 
+X, e vai abrir ela e vai pagar o saque do cara para essa chave PIX aqui. Entendeu? Esse saldo não sai automático da conta do Ghetto, da adquirente. Então eu posso vir aqui, por exemplo, e rejeitar esse saque aqui. Eu vou reprovar esse saque, ele foi rejeitado porque eu não paguei o cara. Então o saldo dele volta para o saldo disponível dele. Mesma coisa quando ele pede antecipação. A antecipação está em saldo pendente e vai para saldo disponível.
+
+
+
+Menu
+
+Dashboards
+Dashboard Admin
+Dashboard Padrão
+Produtos
+Checkout Builder
+Checkout Link
+Lista de Layout
+Transações
+Meu perfil
+
+Sair,
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+apiKey: "AIzaSyBI4D_shIPcmCBhua-Sn9RiCmsw5F3q1KY",
+authDomain: "payhub-6ee93.firebaseapp.com",
+projectId: "payhub-6ee93",
+storageBucket: "payhub-6ee93.firebasestorage.app",
+messagingSenderId: "1001902505050",
+appId: "1:1001902505050:web:d7b6d76792ce11afc2ac63",
+measurementId: "G-2DYBFXKE41"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app)
+
+
+
+
+{
+  "type": "service_account",
+  "project_id": "payhub-6ee93",
+  "private_key_id": "b76e6f5e87d7c73ab87f899511370539419ef90e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDa+Nk0933W2Y6b\nAJDgQ3WhQ+Nal3LkaK7BMW8A/E7L+G6gUZ1qFPjy3BNdXs9JiHhmfci+5sHAZBHc\nY/OZk9xb7hstTnWRQ5wFtlDLDqVeleP9mrYGpM43zIOa+donJXb0x/u/rKebIL34\nn1eP9VFLiYEeSvloWRQUO3OI8mN2i2YIvR71bQjvuPhlIFGidKmIUZYtnmpV7rKH\nHxwBMw0H+D1hPtAavHApW0zlds338k0qutNJQQ2wS5b9TccjKVN7va30QYO8suDt\n26wblfCreGoO0euZ8kWil4/u0GNIVKp4e7PlhB9v5bW3PEdnLDXlVOvMNiiDg7Dz\n3xsxrShTAgMBAAECggEAAZ0Xd1fKakae0b4rOsN4T32KZGrkiJ38fTfJFnvqEwYm\nsu4IkCwKQBYB83oZkz1u4eWEu5NotPd7oLA9xzj/oFXNhsz+Q0cdsr++n7jUw+fd\nJ0upDE8ayuJ5UZ0MaFBM76NT7EVkNajrogmv5kOWWFmWMwv/KArwAbRB4ZudwuGT\n15EQQZ+7UlC2S1uXYhzyR/dd6y679DrpjgDkXCEcoL46LT+PgAcJk79LuPje2wbl\ngVcSQozA9eKbTvhihluqGvbI44jSewO1dUAOLF6avNxTvUe2ikOzOO4pb+uiQ+le\nfyfvagWUsW4oywgKuBDj67An6k2d8t54yq/UrOtjcQKBgQD6LQMMiYoEToXL92Ju\nkqscvOgB0urUmnK88n/iyxRBPlzQYjOBSJ401k0lSBY3QxeY6jV2NmhW/8ugu9I6\nnx+D90nkM5ZhqWUprj+SEzzj9clYggVPQrkiy8hEfqAq6wE4vzD4VFGlgBoT+u2C\n5Duvebp9csTgLdGNmK3SVgAVDQKBgQDgEd6dVwsn5HnhUr5NSI666B86dJtOStn4\n1LNgJdeELapvv3lEcAwdrcPfSCZ5E6RA7JCUtHYGuE0/+8bIs6UAqGD8RLvvoNvg\n19JsmYdpenVADR1gyFRduL7LN8lJnkokDgaunaTYdeGTEfBYUcYtQ222GFCWYGCV\n8c6gDHWa3wKBgAcZp/B/Js+geuOjDcQdnYWfRuZmWgvWplL+fuqs4NJJNtEjOFr+\n+J5/Rok8VoUS/mR0oTfNq4BsmhbhvcG0KmzQY+R6IlZ7PEfGjj9TFHNT0ncUmZn6\nRs7aAcEP5vPQ36QAqR8jJX4Q+KyAfqUsXRVJ2yUcUMIcCsp9/tDtZ+sxAoGAUM3g\n6/jB6yb31QwT2Kb74ednq5r1juxrYtLBxUCgUeht+FKils2ZcPKDGnhYd31f1JH7\nKcVScuXv5c0USLiQHoaaQx8+bxIheRobplJPhPhGZEzWdVqJIitHkt2RV10f+5Sb\nUElFc1I/gNwNQqxqvVP9spdeKHylGC3Vh942Yx0CgYBSjAVtrZoHgwh/JneWPpj7\nJGQEdTDU/odfgzXh4CUcbliZ3jD9bWxuSxBlNMPQnbRxelcpzJx9BxEmuEspFbWO\nxJzfw9Rfi0ebua6cXWP5HS9pOamuDovywkcN3Lay2FZkOWm5zeoaAq14SIcOzkbk\nniebqY4s9qN0dTklQKqiKw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@payhub-6ee93.iam.gserviceaccount.com",
+  "client_id": "116066184599164245231",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40payhub-6ee93.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"

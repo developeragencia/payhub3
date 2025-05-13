@@ -1,0 +1,139 @@
+import { pgTable, text, serial, integer, boolean, timestamp, doublePrecision, jsonb } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
+
+// Usuários
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull().unique(),
+  password: text("password").notNull(),
+  nome: text("nome").notNull(),
+  email: text("email").notNull().unique(),
+  role: text("role").notNull().default("usuario"),
+  avatar: text("avatar"),
+});
+
+export const insertUserSchema = createInsertSchema(users).pick({
+  username: true,
+  password: true,
+  nome: true,
+  email: true,
+});
+
+// Produtos
+export const produtos = pgTable("produtos", {
+  id: serial("id").primaryKey(),
+  nome: text("nome").notNull(),
+  descricao: text("descricao"),
+  preco: doublePrecision("preco").notNull(),
+  imagem: text("imagem"),
+  categoria: text("categoria"),
+  ativo: boolean("ativo").notNull().default(true),
+});
+
+export const insertProdutoSchema = createInsertSchema(produtos).pick({
+  nome: true,
+  descricao: true,
+  preco: true,
+  imagem: true,
+  categoria: true,
+  ativo: true,
+});
+
+// Checkouts
+export const checkouts = pgTable("checkouts", {
+  id: serial("id").primaryKey(),
+  nome: text("nome").notNull(),
+  url: text("url").notNull(),
+  produtoId: integer("produto_id").notNull(),
+  layout: text("layout").notNull(),
+  config: jsonb("config").notNull(),
+  dataCriacao: timestamp("data_criacao").notNull().defaultNow(),
+  ativo: boolean("ativo").notNull().default(true),
+});
+
+export const insertCheckoutSchema = createInsertSchema(checkouts).pick({
+  nome: true,
+  url: true,
+  produtoId: true,
+  layout: true,
+  config: true,
+  ativo: true,
+});
+
+// Transações
+export const transacoes = pgTable("transacoes", {
+  id: serial("id").primaryKey(),
+  checkoutId: integer("checkout_id").notNull(),
+  clienteNome: text("cliente_nome").notNull(),
+  clienteEmail: text("cliente_email").notNull(),
+  valor: doublePrecision("valor").notNull(),
+  status: text("status").notNull(),
+  metodo: text("metodo").notNull(),
+  data: timestamp("data").notNull().defaultNow(),
+  referencia: text("referencia").notNull(),
+});
+
+export const insertTransacaoSchema = createInsertSchema(transacoes).pick({
+  checkoutId: true,
+  clienteNome: true,
+  clienteEmail: true,
+  valor: true,
+  status: true,
+  metodo: true,
+  referencia: true,
+});
+
+// Webhooks
+export const webhooks = pgTable("webhooks", {
+  id: serial("id").primaryKey(),
+  evento: text("evento").notNull(),
+  url: text("url").notNull(),
+  ativo: boolean("ativo").notNull().default(true),
+  ultimoStatus: text("ultimo_status"),
+  ultimaExecucao: timestamp("ultima_execucao"),
+});
+
+export const insertWebhookSchema = createInsertSchema(webhooks).pick({
+  evento: true,
+  url: true,
+  ativo: true,
+});
+
+// Atividades
+export const atividades = pgTable("atividades", {
+  id: serial("id").primaryKey(),
+  tipo: text("tipo").notNull(),
+  descricao: text("descricao").notNull(),
+  data: timestamp("data").notNull().defaultNow(),
+  icone: text("icone"),
+  cor: text("cor"),
+  userId: integer("user_id"),
+});
+
+export const insertAtividadeSchema = createInsertSchema(atividades).pick({
+  tipo: true,
+  descricao: true,
+  icone: true,
+  cor: true,
+  userId: true,
+});
+
+// Export types
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+
+export type Produto = typeof produtos.$inferSelect;
+export type InsertProduto = z.infer<typeof insertProdutoSchema>;
+
+export type Checkout = typeof checkouts.$inferSelect;
+export type InsertCheckout = z.infer<typeof insertCheckoutSchema>;
+
+export type Transacao = typeof transacoes.$inferSelect;
+export type InsertTransacao = z.infer<typeof insertTransacaoSchema>;
+
+export type Webhook = typeof webhooks.$inferSelect;
+export type InsertWebhook = z.infer<typeof insertWebhookSchema>;
+
+export type Atividade = typeof atividades.$inferSelect;
+export type InsertAtividade = z.infer<typeof insertAtividadeSchema>;
