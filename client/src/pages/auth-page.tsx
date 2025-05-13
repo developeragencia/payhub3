@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Loader2, CreditCard, Mail, User, Lock, CheckCircle } from "lucide-react";
+import { Loader2, CreditCard, Mail, User, Lock, CheckCircle2, ArrowRight, Shield, LayoutDashboard, Wallet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
@@ -146,11 +146,11 @@ export default function AuthPage() {
   
   if (isLoading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-[#111] z-50">
+      <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
         <div className="relative">
-          <div className="h-24 w-24 rounded-full border-t-4 border-b-4 border-purple-500 animate-spin"></div>
+          <div className="h-16 w-16 rounded-full border-4 border-t-transparent border-blue-500 animate-spin"></div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <CreditCard className="h-8 w-8 text-purple-500" />
+            <CreditCard className="h-6 w-6 text-blue-500" />
           </div>
         </div>
       </div>
@@ -162,57 +162,89 @@ export default function AuthPage() {
   }
   
   return (
-    <div className="min-h-screen relative overflow-hidden bg-black text-white">
-      {/* Background animado */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(120,_0,_255,_0.15),_rgba(0,_0,_0,_0)_70%)]"></div>
-        <div className="absolute h-full w-full opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Cg fill-rule=\'evenodd\'%3E%3Cg fill=\'%239C92AC\' fill-opacity=\'0.4\'%3E%3Cpath opacity=\'.5\' d=\'M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z\'/%3E%3Cpath d=\'M6 5V0H5v5H0v1h5v94h1V6h94V5H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")', backgroundSize: '30px' }}></div>
+    <div className="min-h-screen bg-white relative overflow-hidden flex items-center justify-center">
+      {/* Ondas decorativas */}
+      <div className="absolute bottom-0 left-0 right-0 h-64 -z-10">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-full text-blue-50">
+          <path fill="currentColor" fillOpacity="1" d="M0,128L48,144C96,160,192,192,288,176C384,160,480,96,576,74.7C672,53,768,75,864,96C960,117,1056,139,1152,133.3C1248,128,1344,96,1392,80L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
       </div>
-
-      {/* Partículas flutuantes */}
-      <div className="absolute inset-0 overflow-hidden -z-5">
-        {[...Array(20)].map((_, i) => (
-          <div 
-            key={i}
-            className="absolute rounded-full bg-gradient-to-br from-purple-600 to-blue-500 opacity-20 animate-float"
-            style={{ 
-              width: `${Math.random() * 6 + 2}px`, 
-              height: `${Math.random() * 6 + 2}px`,
-              left: `${Math.random() * 100}%`, 
-              top: `${Math.random() * 100}%`,
-              animationDuration: `${Math.random() * 10 + 10}s`,
-              animationDelay: `${Math.random() * 5}s`
-            }}
-          />
-        ))}
+      <div className="absolute top-0 left-0 right-0 h-64 -z-10 opacity-70">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-full rotate-180 text-blue-50">
+          <path fill="currentColor" fillOpacity="1" d="M0,128L48,144C96,160,192,192,288,176C384,160,480,96,576,74.7C672,53,768,75,864,96C960,117,1056,139,1152,133.3C1248,128,1344,96,1392,80L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
       </div>
-
-      {/* Círculos de gradiente */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-gradient-to-br from-purple-600/20 via-fuchsia-500/20 to-transparent rounded-full blur-[100px] -translate-y-1/2 -translate-x-1/4"></div>
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-blue-600/20 via-cyan-500/20 to-transparent rounded-full blur-[100px] translate-y-1/4 translate-x-1/4"></div>
+      
+      {/* Círculos decorativos */}
+      <div className="absolute top-20 left-20 w-64 h-64 rounded-full bg-gradient-to-tr from-blue-100 to-blue-50 -z-10 blur-3xl opacity-70"></div>
+      <div className="absolute bottom-20 right-20 w-64 h-64 rounded-full bg-gradient-to-br from-indigo-100 to-blue-50 -z-10 blur-3xl opacity-70"></div>
       
       {/* Container principal */}
-      <div className="container mx-auto px-4 py-8 min-h-screen flex flex-col items-center justify-center relative z-10">
-        {/* Logo */}
-        <div className="mb-10 md:mb-16 text-center">
-          <div className="inline-flex items-center justify-center">
-            <div className="relative w-12 h-12 md:w-16 md:h-16 flex items-center justify-center">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-500 rounded-xl animate-pulse-slow"></div>
-              <div className="absolute inset-0 bg-black rounded-xl m-0.5"></div>
-              <CreditCard className="relative z-10 h-6 w-6 md:h-8 md:w-8 text-white" />
-              <div className="absolute -right-1 -top-1 w-3 h-3 md:w-4 md:h-4 bg-gradient-to-br from-purple-500 to-fuchsia-600 rounded-full animate-pulse"></div>
+      <div className="container mx-auto px-4 py-8 flex flex-col md:flex-row items-center gap-8 md:gap-16">
+        {/* Lado esquerdo - ilustração e texto */}
+        <div className="w-full md:w-1/2 space-y-8 animate-fade-in">
+          <div className="text-center md:text-left space-y-4">
+            <div className="flex items-center justify-center md:justify-start mb-6">
+              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-3 rounded-2xl shadow-lg">
+                <CreditCard className="h-8 w-8 text-white" />
+              </div>
+              <h1 className="ml-4 text-3xl md:text-4xl font-extrabold text-gray-900">
+                PAY<span className="text-blue-600">HUB</span>
+              </h1>
             </div>
-            <h1 className="ml-4 text-3xl md:text-4xl font-extrabold tracking-tight">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-500">PAYHUB</span>
-            </h1>
+            
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+              A plataforma completa para <span className="text-blue-600">pagamentos online</span>
+            </h2>
+            
+            <p className="text-lg text-gray-600 max-w-lg">
+              Aceite pagamentos, gerencie vendas e acompanhe o crescimento do seu negócio em um único lugar.
+            </p>
           </div>
-          <p className="mt-3 text-gray-400 max-w-md mx-auto">A plataforma de pagamentos completa para seu negócio</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 staggered-fade-in">
+            <FeatureCard 
+              icon={<CreditCard className="h-6 w-6 text-blue-600" />}
+              title="Pagamentos Seguros"
+              description="Processe transações com segurança e facilidade."
+            />
+            
+            <FeatureCard 
+              icon={<Wallet className="h-6 w-6 text-blue-600" />}
+              title="Múltiplos Métodos"
+              description="Cartões, boletos, Pix e muito mais."
+            />
+            
+            <FeatureCard 
+              icon={<LayoutDashboard className="h-6 w-6 text-blue-600" />}
+              title="Dashboard Completo"
+              description="Visualize e gerencie todos os dados em um só lugar."
+            />
+            
+            <FeatureCard 
+              icon={<Shield className="h-6 w-6 text-blue-600" />}
+              title="Proteção Antifraude"
+              description="Tecnologia avançada contra fraudes."
+            />
+          </div>
+          
+          <div className="pt-6 hidden md:block">
+            <div className="flex items-center space-x-4">
+              <div className="flex -space-x-4">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium border-2 border-white">JD</div>
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-medium border-2 border-white">ML</div>
+                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-medium border-2 border-white">TS</div>
+              </div>
+              <div className="text-sm text-gray-600">
+                Junte-se a mais de <span className="font-semibold">2,500+</span> empresas
+              </div>
+            </div>
+          </div>
         </div>
         
-        {/* Card principal */}
-        <div className="w-full max-w-md relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-500 rounded-2xl blur p-0.5 animate-pulse-slow -z-10"></div>
-          <Card className="relative bg-black/95 border border-gray-800 rounded-2xl backdrop-blur-sm overflow-hidden">
+        {/* Lado direito - formulário */}
+        <div className="w-full md:w-1/2 max-w-md mx-auto animate-fade-in">
+          <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
             <CardContent className="p-0">
               <Tabs 
                 defaultValue="login" 
@@ -221,16 +253,16 @@ export default function AuthPage() {
                 className="w-full"
               >
                 <div className="px-6 pt-6">
-                  <TabsList className="grid grid-cols-2 w-full h-12 bg-gray-900/50 p-1 rounded-xl">
+                  <TabsList className="grid grid-cols-2 w-full h-12 bg-gray-100/80 p-1 rounded-lg">
                     <TabsTrigger 
                       value="login" 
-                      className="rounded-lg py-3 text-sm font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-500 data-[state=active]:shadow-lg transition-all duration-300"
+                      className="rounded-md py-2.5 font-medium data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm transition-all duration-200"
                     >
                       Login
                     </TabsTrigger>
                     <TabsTrigger 
                       value="register" 
-                      className="rounded-lg py-3 text-sm font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-600 data-[state=active]:shadow-lg transition-all duration-300"
+                      className="rounded-md py-2.5 font-medium data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm transition-all duration-200"
                     >
                       Cadastro
                     </TabsTrigger>
@@ -238,27 +270,34 @@ export default function AuthPage() {
                 </div>
                 
                 <TabsContent value="login" className="p-6 pt-8 animate-fade-in">
+                  <div className="text-center mb-6">
+                    <h3 className="text-xl font-bold text-gray-900">Bem-vindo de volta!</h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Acesse sua conta para continuar gerenciando seu negócio
+                    </p>
+                  </div>
+                  
                   <Form {...loginForm}>
-                    <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-5">
+                    <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
                       <FormField
                         control={loginForm.control}
                         name="username"
                         render={({ field }) => (
                           <FormItem className="space-y-1.5">
-                            <FormLabel className="text-sm font-medium text-gray-300">Nome de usuário</FormLabel>
+                            <FormLabel className="text-sm font-medium text-gray-700">Nome de usuário</FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                   <User className="h-5 w-5" />
                                 </div>
                                 <Input 
                                   placeholder="Digite seu usuário" 
                                   {...field} 
-                                  className="bg-gray-900/50 border-gray-800 pl-10 rounded-xl h-12 focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-white transition-all"
+                                  className="bg-gray-50 border-gray-200 pl-10 rounded-lg h-11 focus:border-blue-500 focus:ring-blue-500"
                                 />
                               </div>
                             </FormControl>
-                            <FormMessage className="text-red-400 text-xs font-medium" />
+                            <FormMessage className="text-red-500 text-xs font-medium" />
                           </FormItem>
                         )}
                       />
@@ -269,33 +308,44 @@ export default function AuthPage() {
                         render={({ field }) => (
                           <FormItem className="space-y-1.5">
                             <div className="flex justify-between items-center">
-                              <FormLabel className="text-sm font-medium text-gray-300">Senha</FormLabel>
-                              <a href="#" className="text-xs text-purple-400 hover:text-purple-300 transition-colors">
+                              <FormLabel className="text-sm font-medium text-gray-700">Senha</FormLabel>
+                              <a href="#" className="text-xs text-blue-600 hover:text-blue-800 font-medium">
                                 Esqueceu a senha?
                               </a>
                             </div>
                             <FormControl>
                               <div className="relative">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                   <Lock className="h-5 w-5" />
                                 </div>
                                 <Input 
                                   type="password" 
                                   placeholder="Digite sua senha" 
                                   {...field} 
-                                  className="bg-gray-900/50 border-gray-800 pl-10 rounded-xl h-12 focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-white transition-all"
+                                  className="bg-gray-50 border-gray-200 pl-10 rounded-lg h-11 focus:border-blue-500 focus:ring-blue-500"
                                 />
                               </div>
                             </FormControl>
-                            <FormMessage className="text-red-400 text-xs font-medium" />
+                            <FormMessage className="text-red-500 text-xs font-medium" />
                           </FormItem>
                         )}
                       />
                       
+                      <div className="flex items-center pt-2">
+                        <input
+                          type="checkbox"
+                          id="remember"
+                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <label htmlFor="remember" className="ml-2 block text-sm text-gray-600">
+                          Lembrar-me
+                        </label>
+                      </div>
+                      
                       <div className="pt-2">
                         <Button 
                           type="submit" 
-                          className="w-full h-12 bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 rounded-xl font-medium text-white shadow-lg shadow-purple-900/20 relative overflow-hidden group"
+                          className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 relative overflow-hidden group"
                           disabled={isPending}
                         >
                           {/* Efeito de brilho */}
@@ -308,18 +358,21 @@ export default function AuthPage() {
                                 Entrando...
                               </>
                             ) : (
-                              "Entrar"
+                              <>
+                                Entrar
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                              </>
                             )}
                           </span>
                         </Button>
                       </div>
                       
-                      <div className="text-center">
-                        <p className="text-sm text-gray-400">
+                      <div className="text-center pt-4">
+                        <p className="text-sm text-gray-600">
                           Não tem uma conta?{" "}
                           <button 
                             onClick={() => setActiveTab("register")}
-                            className="text-purple-400 font-medium hover:text-purple-300 transition-colors"
+                            className="text-blue-600 font-medium hover:text-blue-800 transition-colors"
                             type="button"
                           >
                             Cadastre-se
@@ -331,6 +384,13 @@ export default function AuthPage() {
                 </TabsContent>
                 
                 <TabsContent value="register" className="p-6 pt-8 animate-fade-in">
+                  <div className="text-center mb-6">
+                    <h3 className="text-xl font-bold text-gray-900">Crie sua conta</h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Comece a aceitar pagamentos em minutos
+                    </p>
+                  </div>
+                  
                   <Form {...registerForm}>
                     <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
                       <FormField
@@ -338,20 +398,20 @@ export default function AuthPage() {
                         name="nome"
                         render={({ field }) => (
                           <FormItem className="space-y-1.5">
-                            <FormLabel className="text-sm font-medium text-gray-300">Nome completo</FormLabel>
+                            <FormLabel className="text-sm font-medium text-gray-700">Nome completo</FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                   <User className="h-5 w-5" />
                                 </div>
                                 <Input 
                                   placeholder="Digite seu nome completo" 
                                   {...field} 
-                                  className="bg-gray-900/50 border-gray-800 pl-10 rounded-xl h-12 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-white transition-all"
+                                  className="bg-gray-50 border-gray-200 pl-10 rounded-lg h-11 focus:border-blue-500 focus:ring-blue-500"
                                 />
                               </div>
                             </FormControl>
-                            <FormMessage className="text-red-400 text-xs font-medium" />
+                            <FormMessage className="text-red-500 text-xs font-medium" />
                           </FormItem>
                         )}
                       />
@@ -361,21 +421,21 @@ export default function AuthPage() {
                         name="email"
                         render={({ field }) => (
                           <FormItem className="space-y-1.5">
-                            <FormLabel className="text-sm font-medium text-gray-300">E-mail</FormLabel>
+                            <FormLabel className="text-sm font-medium text-gray-700">E-mail</FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                   <Mail className="h-5 w-5" />
                                 </div>
                                 <Input 
                                   type="email" 
                                   placeholder="Digite seu e-mail" 
                                   {...field} 
-                                  className="bg-gray-900/50 border-gray-800 pl-10 rounded-xl h-12 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-white transition-all"
+                                  className="bg-gray-50 border-gray-200 pl-10 rounded-lg h-11 focus:border-blue-500 focus:ring-blue-500"
                                 />
                               </div>
                             </FormControl>
-                            <FormMessage className="text-red-400 text-xs font-medium" />
+                            <FormMessage className="text-red-500 text-xs font-medium" />
                           </FormItem>
                         )}
                       />
@@ -385,20 +445,20 @@ export default function AuthPage() {
                         name="username"
                         render={({ field }) => (
                           <FormItem className="space-y-1.5">
-                            <FormLabel className="text-sm font-medium text-gray-300">Nome de usuário</FormLabel>
+                            <FormLabel className="text-sm font-medium text-gray-700">Nome de usuário</FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                   <User className="h-5 w-5" />
                                 </div>
                                 <Input 
                                   placeholder="Digite um nome de usuário" 
                                   {...field} 
-                                  className="bg-gray-900/50 border-gray-800 pl-10 rounded-xl h-12 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-white transition-all"
+                                  className="bg-gray-50 border-gray-200 pl-10 rounded-lg h-11 focus:border-blue-500 focus:ring-blue-500"
                                 />
                               </div>
                             </FormControl>
-                            <FormMessage className="text-red-400 text-xs font-medium" />
+                            <FormMessage className="text-red-500 text-xs font-medium" />
                           </FormItem>
                         )}
                       />
@@ -409,21 +469,21 @@ export default function AuthPage() {
                           name="password"
                           render={({ field }) => (
                             <FormItem className="space-y-1.5">
-                              <FormLabel className="text-sm font-medium text-gray-300">Senha</FormLabel>
+                              <FormLabel className="text-sm font-medium text-gray-700">Senha</FormLabel>
                               <FormControl>
                                 <div className="relative">
-                                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                     <Lock className="h-5 w-5" />
                                   </div>
                                   <Input 
                                     type="password" 
                                     placeholder="Digite uma senha" 
                                     {...field} 
-                                    className="bg-gray-900/50 border-gray-800 pl-10 rounded-xl h-12 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-white transition-all"
+                                    className="bg-gray-50 border-gray-200 pl-10 rounded-lg h-11 focus:border-blue-500 focus:ring-blue-500"
                                   />
                                 </div>
                               </FormControl>
-                              <FormMessage className="text-red-400 text-xs font-medium" />
+                              <FormMessage className="text-red-500 text-xs font-medium" />
                             </FormItem>
                           )}
                         />
@@ -433,42 +493,41 @@ export default function AuthPage() {
                           name="confirmPassword"
                           render={({ field }) => (
                             <FormItem className="space-y-1.5">
-                              <FormLabel className="text-sm font-medium text-gray-300">Confirmar senha</FormLabel>
+                              <FormLabel className="text-sm font-medium text-gray-700">Confirmar senha</FormLabel>
                               <FormControl>
                                 <div className="relative">
-                                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                     <Lock className="h-5 w-5" />
                                   </div>
                                   <Input 
                                     type="password" 
                                     placeholder="Confirme sua senha" 
                                     {...field} 
-                                    className="bg-gray-900/50 border-gray-800 pl-10 rounded-xl h-12 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-white transition-all"
+                                    className="bg-gray-50 border-gray-200 pl-10 rounded-lg h-11 focus:border-blue-500 focus:ring-blue-500"
                                   />
                                 </div>
                               </FormControl>
-                              <FormMessage className="text-red-400 text-xs font-medium" />
+                              <FormMessage className="text-red-500 text-xs font-medium" />
                             </FormItem>
                           )}
                         />
                       </div>
                       
-                      <div className="flex items-center gap-3 mt-2">
-                        <div className="relative flex items-center">
-                          <input type="checkbox" id="terms" className="sr-only" />
-                          <div className="h-5 w-5 border-2 border-gray-700 rounded flex items-center justify-center bg-gray-900/50">
-                            <CheckCircle className="h-3.5 w-3.5 text-purple-500 opacity-0 peer-checked:opacity-100" />
-                          </div>
-                        </div>
-                        <label htmlFor="terms" className="text-sm text-gray-400">
-                          Concordo com os <a href="#" className="text-purple-400 hover:text-purple-300">Termos de Uso</a> e <a href="#" className="text-purple-400 hover:text-purple-300">Política de Privacidade</a>
+                      <div className="flex items-center gap-3 pt-2">
+                        <input
+                          type="checkbox"
+                          id="terms"
+                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <label htmlFor="terms" className="text-sm text-gray-600">
+                          Concordo com os <a href="#" className="text-blue-600 hover:underline">Termos de Uso</a> e <a href="#" className="text-blue-600 hover:underline">Política de Privacidade</a>
                         </label>
                       </div>
                       
                       <div className="pt-2">
                         <Button 
                           type="submit" 
-                          className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-xl font-medium text-white shadow-lg shadow-purple-900/20 relative overflow-hidden group"
+                          className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 relative overflow-hidden group"
                           disabled={isPending}
                         >
                           {/* Efeito de brilho */}
@@ -481,18 +540,21 @@ export default function AuthPage() {
                                 Cadastrando...
                               </>
                             ) : (
-                              "Criar conta"
+                              <>
+                                Criar conta
+                                <CheckCircle2 className="ml-2 h-4 w-4" />
+                              </>
                             )}
                           </span>
                         </Button>
                       </div>
                       
-                      <div className="text-center">
-                        <p className="text-sm text-gray-400">
+                      <div className="text-center pt-4">
+                        <p className="text-sm text-gray-600">
                           Já tem uma conta?{" "}
                           <button 
                             onClick={() => setActiveTab("login")}
-                            className="text-purple-400 font-medium hover:text-purple-300 transition-colors"
+                            className="text-blue-600 font-medium hover:text-blue-800 transition-colors"
                             type="button"
                           >
                             Faça login
@@ -505,55 +567,36 @@ export default function AuthPage() {
               </Tabs>
             </CardContent>
           </Card>
-        </div>
-        
-        {/* Recursos */}
-        <div className="mt-12 md:mt-16 w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center animate-fade-in">
-          <div className="bg-gradient-to-b from-gray-900/70 to-black/80 p-6 rounded-xl border border-gray-800 backdrop-blur-sm group hover-lift">
-            <div className="flex items-center justify-center mx-auto w-12 h-12 mb-4 rounded-lg bg-purple-500/10 text-purple-500">
-              <CreditCard className="h-6 w-6" />
-            </div>
-            <h3 className="text-lg font-medium text-white">Pagamentos</h3>
-            <p className="text-sm text-gray-400 mt-2">Aceite múltiplos métodos de pagamento.</p>
-          </div>
           
-          <div className="bg-gradient-to-b from-gray-900/70 to-black/80 p-6 rounded-xl border border-gray-800 backdrop-blur-sm group hover-lift">
-            <div className="flex items-center justify-center mx-auto w-12 h-12 mb-4 rounded-lg bg-blue-500/10 text-blue-500">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="5" width="20" height="14" rx="2" />
-                <line x1="2" y1="10" x2="22" y2="10" />
-              </svg>
+          {/* Empresas parceiras */}
+          <div className="mt-8 text-center">
+            <p className="text-xs text-gray-500 mb-3">EMPRESAS QUE CONFIAM NO PAYHUB</p>
+            <div className="flex justify-center items-center space-x-6 opacity-70">
+              <div className="w-16 h-8 bg-gray-200 rounded flex items-center justify-center">Logo</div>
+              <div className="w-16 h-8 bg-gray-200 rounded flex items-center justify-center">Logo</div>
+              <div className="w-16 h-8 bg-gray-200 rounded flex items-center justify-center">Logo</div>
             </div>
-            <h3 className="text-lg font-medium text-white">Checkout</h3>
-            <p className="text-sm text-gray-400 mt-2">Experiência de compra simplificada.</p>
-          </div>
-          
-          <div className="bg-gradient-to-b from-gray-900/70 to-black/80 p-6 rounded-xl border border-gray-800 backdrop-blur-sm group hover-lift">
-            <div className="flex items-center justify-center mx-auto w-12 h-12 mb-4 rounded-lg bg-cyan-500/10 text-cyan-500">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
-                <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-white">Produtos</h3>
-            <p className="text-sm text-gray-400 mt-2">Gerenciamento completo de produtos.</p>
-          </div>
-          
-          <div className="bg-gradient-to-b from-gray-900/70 to-black/80 p-6 rounded-xl border border-gray-800 backdrop-blur-sm group hover-lift">
-            <div className="flex items-center justify-center mx-auto w-12 h-12 mb-4 rounded-lg bg-fuchsia-500/10 text-fuchsia-500">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-white">Webhooks</h3>
-            <p className="text-sm text-gray-400 mt-2">Notificações em tempo real.</p>
           </div>
         </div>
-        
-        {/* Footer */}
-        <div className="mt-12 text-center animate-fade-in">
-          <p className="text-sm text-gray-500">© 2025 PAYHUB. Todos os direitos reservados.</p>
-        </div>
+      </div>
+    </div>
+  );
+}
+
+// Componente de card de recursos
+function FeatureCard({ icon, title, description }: { 
+  icon: React.ReactNode; 
+  title: string; 
+  description: string;
+}) {
+  return (
+    <div className="flex items-start gap-4 p-5 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+      <div className="flex-shrink-0 mt-1">
+        {icon}
+      </div>
+      <div>
+        <h3 className="font-semibold text-gray-900">{title}</h3>
+        <p className="text-sm text-gray-600 mt-1">{description}</p>
       </div>
     </div>
   );
