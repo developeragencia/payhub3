@@ -169,6 +169,34 @@ export default function ListaLayoutPage() {
     });
   };
 
+  const renderLayoutsGrid = (layouts: Layout[]) => (
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {layouts.length > 0 ? (
+        layouts.map((layout) => (
+          <LayoutCard key={layout.id} layout={layout} />
+        ))
+      ) : (
+        <div className="col-span-full">
+          <Card className="text-center p-8">
+            <CardContent className="pt-6 flex flex-col items-center">
+              <LayoutTemplate className="h-16 w-16 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">Nenhum layout encontrado</h3>
+              <p className="text-muted-foreground mb-4">
+                {searchTerm
+                  ? `Não encontramos layouts com o termo "${searchTerm}"`
+                  : `Não há layouts ${activeTab !== "todos" ? `do tipo ${activeTab}` : ""} disponíveis.`}
+              </p>
+              <Button onClick={() => setIsDialogOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Criar novo layout
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <MainLayout pageTitle="Lista de Layout">
       <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
@@ -262,31 +290,21 @@ export default function ListaLayoutPage() {
           <TabsTrigger value="responsivo">Responsivo</TabsTrigger>
         </TabsList>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredLayouts.length > 0 ? (
-            filteredLayouts.map((layout) => (
-              <LayoutCard key={layout.id} layout={layout} />
-            ))
-          ) : (
-            <div className="col-span-full">
-              <Card className="text-center p-8">
-                <CardContent className="pt-6 flex flex-col items-center">
-                  <LayoutTemplate className="h-16 w-16 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Nenhum layout encontrado</h3>
-                  <p className="text-muted-foreground mb-4">
-                    {searchTerm
-                      ? `Não encontramos layouts com o termo "${searchTerm}"`
-                      : `Não há layouts ${activeTab !== "todos" ? `do tipo ${activeTab}` : ""} disponíveis.`}
-                  </p>
-                  <Button onClick={() => setIsDialogOpen(true)}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Criar novo layout
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-        </div>
+        <TabsContent value="todos">
+          {renderLayoutsGrid(filteredLayouts)}
+        </TabsContent>
+        
+        <TabsContent value="desktop">
+          {renderLayoutsGrid(filteredLayouts)}
+        </TabsContent>
+        
+        <TabsContent value="mobile">
+          {renderLayoutsGrid(filteredLayouts)}
+        </TabsContent>
+        
+        <TabsContent value="responsivo">
+          {renderLayoutsGrid(filteredLayouts)}
+        </TabsContent>
       </Tabs>
     </MainLayout>
   );
