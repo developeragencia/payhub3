@@ -2,7 +2,7 @@ import express from 'express';
 import serverless from 'serverless-http';
 import session from 'express-session';
 import cors from 'cors';
-import { setupAuth } from '../server/auth-new.js';
+import { setupAuth } from '../auth-new.js';
 import { registerRoutes } from '../server/routes.js';
 import { setupDatabase } from '../server/db-setup.js';
 
