@@ -4,10 +4,10 @@ import session from 'express-session';
 import cors from 'cors';
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { storage } from "../server/storage.js";
-import { hashPassword, comparePasswords } from "../server/auth-utils.js";
-import { registerRoutes } from '../server/routes.js';
-import { setupDatabase } from '../server/db-setup.js';
+import { storage } from './storage.js';
+import { hashPassword, comparePasswords } from './auth-utils.js';
+import { registerRoutes } from './routes.js';
+import { setupDatabase } from './db-setup.js';
 
 const app = express();
 
