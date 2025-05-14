@@ -54,7 +54,8 @@ export function setupAuth(app: Express) {
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 24 horas
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true, // Sempre true para produção Netlify
+      sameSite: "lax", // Garante que o cookie seja aceito pelo navegador
     },
     store: storage.sessionStore,
   };
