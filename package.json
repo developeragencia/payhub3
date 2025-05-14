@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "NODE_ENV=development tsx server/index.ts",
-    "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist && esbuild server/auth-new.ts --platform=node --bundle --format=esm --outfile=dist/auth-new.js && mkdir .netlify\\functions\\server 2>nul & copy dist\\auth-new.js .netlify\\functions\\server\\auth-new.js",
+    "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist && esbuild server/auth-new.ts --platform=node --bundle --format=esm --outfile=dist/auth-new.js && mkdir -p .netlify/functions/server && cp dist/auth-new.js .netlify/functions/server/auth-new.js",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
     "db:push": "drizzle-kit push"
